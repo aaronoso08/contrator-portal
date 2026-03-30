@@ -933,11 +933,13 @@ async function updateTicket(updated) {
 
 // File upload to Supabase Storage
 async function uploadFileToStorage(ticketId, stepIndex, file) {
-  const ext = file.name.split('.').pop();
-  const path = `${ticketId}/${stepIndex}/${Date.now()}_${file.name}`;
-  const { data, error } = await sb.storage.from('ticket-files').upload(path, file, { upsert: true });
+  // sanitize filename - remove spaces and special chars
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `${ticketId}/${stepIndex}/${Date.now()}_${safeName}`;
+  const { data, error } = await sb.storage.from('ticket-files').upload(path, file, { upsert: true, contentType: file.type });
   if (error) { console.error('Upload error:', error); return null; }
   const { data: urlData } = sb.storage.from('ticket-files').getPublicUrl(path);
+  console.log('Uploaded:', file.name, '→', urlData.publicUrl);
   return { path, url: urlData.publicUrl, name: file.name, type: file.type };
 }
 
