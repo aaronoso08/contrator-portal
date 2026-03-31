@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contractor Portal</title>
+<title>Energy Trust – Contractor Portal</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -206,7 +206,7 @@
 <body>
 
 <div class="topbar">
-  <div class="topbar-brand">CONTRACTOR PORTAL</div>
+  <div class="topbar-brand">ENERGY TRUST — CONTRACTOR PORTAL</div>
   <div class="topbar-right">
     <div class="lang-toggle">
       <button class="lang-btn active" id="lb-en" onclick="setLang('en')">EN</button>
@@ -461,6 +461,7 @@ const T = {
     label_contractor_name:'Contractor Name', label_contractor_email:'Contractor Email',
     label_address:'Property Address', label_steps:'Checklist Steps',
     placeholder_step:'Add a step...', btn_add:'Add', btn_cancel:'Cancel', btn_create:'Create Ticket',
+    placeholder_contractor:'Jane Smith', placeholder_email:'jane@contractor.com', placeholder_address:'123 Main St, Portland OR',
     assigned_to:'Assigned to', progress_complete:'complete', enter_field:'Enter value…',
     loading_tickets:'Loading tickets…', no_tickets:'No tickets yet. Create the first one.',
     toast_link_copied:'Link copied to clipboard', toast_uploading:'Uploading file(s)…',
@@ -506,6 +507,7 @@ const T = {
     label_contractor_name:'Nombre del Contratista', label_contractor_email:'Correo del Contratista',
     label_address:'Dirección de la Propiedad', label_steps:'Pasos del Checklist',
     placeholder_step:'Agregar un paso...', btn_add:'Agregar', btn_cancel:'Cancelar', btn_create:'Crear Ticket',
+    placeholder_contractor:'Juan Pérez', placeholder_email:'juan@contratista.com', placeholder_address:'123 Calle Principal, Portland OR',
     assigned_to:'Asignado a', progress_complete:'completado', enter_field:'Ingresa valor…',
     loading_tickets:'Cargando tickets…', no_tickets:'No hay tickets aún. Crea el primero.',
     toast_link_copied:'Enlace copiado al portapapeles', toast_uploading:'Subiendo archivo(s)…',
@@ -539,27 +541,81 @@ function applyTranslations() {
   const s = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = t(key); };
   const si = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = t(key); };
   const sp = (id, key) => { const el = document.getElementById(id); if (el) el.placeholder = t(key); };
-  si('entry-title', 'entry_title'); si('entry-sub', 'entry_sub');
-  si('btn-have-ticket', 'btn_have_ticket'); si('btn-coord-login', 'btn_coord_login');
-  s('coord-login-title', 'coord_login_title'); s('coord-login-sub', 'coord_login_sub');
+
+  // Entry view
+  si('entry-title', 'entry_title');
+  si('entry-sub', 'entry_sub');
+  si('btn-have-ticket', 'btn_have_ticket');
+  si('btn-coord-login', 'btn_coord_login');
+  // find the entry-divider "or" text
+  document.querySelectorAll('.entry-divider').forEach(el => { el.textContent = t('entry_or'); });
+
+  // Coordinator login view
+  s('coord-login-title', 'coord_login_title');
+  s('coord-login-sub', 'coord_login_sub');
   sp('coordPinInput', 'coord_pin_placeholder');
-  s('btn-sign-in', 'btn_sign_in'); s('btn-back-login', 'btn_back'); s('btn-back-lookup', 'btn_back');
-  s('lookup-title', 'lookup_title'); s('lookup-sub', 'lookup_sub');
+  s('btn-sign-in', 'btn_sign_in');
+  s('btn-back-login', 'btn_back');
+
+  // Contractor lookup view
+  s('lookup-title', 'lookup_title');
+  s('lookup-sub', 'lookup_sub');
   sp('ticketCodeInput', 'ticket_placeholder');
   s('btn-open-ticket', 'btn_open_ticket');
-  s('dash-title', 'dash_title'); s('dash-sub', 'dash_sub');
-  s('btn-signout', 'btn_signout'); s('btn-new-ticket', 'btn_new_ticket');
+  s('btn-back-lookup', 'btn_back');
+
+  // Dashboard
+  s('dash-title', 'dash_title');
+  s('dash-sub', 'dash_sub');
+  s('btn-signout', 'btn_signout');
+  s('btn-new-ticket', 'btn_new_ticket');
   s('section-all-tickets', 'section_all_tickets');
+
+  // Detail view
   s('btn-all-tickets', 'btn_all_tickets');
+  renderDetailActions();
+
+  // Contractor checklist view
   s('checklist-section-title', 'checklist_section');
+
+  // Modal
   s('modal-title', 'modal_title');
-  s('label-ticket-id', 'label_ticket_id'); s('label-project-type', 'label_project_type');
-  s('label-contractor-name', 'label_contractor_name'); s('label-contractor-email', 'label_contractor_email');
-  s('label-address', 'label_address'); s('label-steps', 'label_steps');
+  s('label-ticket-id', 'label_ticket_id');
+  s('label-project-type', 'label_project_type');
+  s('label-contractor-name', 'label_contractor_name');
+  s('label-contractor-email', 'label_contractor_email');
+  s('label-address', 'label_address');
+  s('label-steps', 'label_steps');
   sp('newStepInput', 'placeholder_step');
-  s('btn-add-step', 'btn_add'); s('btn-cancel-modal', 'btn_cancel'); s('btn-create-ticket', 'btn_create');
+  sp('ntContractor', 'placeholder_contractor');
+  sp('ntEmail', 'placeholder_email');
+  sp('ntAddress', 'placeholder_address');
+  s('btn-add-step', 'btn_add');
+  s('btn-cancel-modal', 'btn_cancel');
+  s('btn-create-ticket', 'btn_create');
+
+  // Project type options
+  const ntType = document.getElementById('ntType');
+  if (ntType) {
+    const projectTypes = currentLang === 'es'
+      ? ['Evaluación del Hogar','Instalación de Bomba de Calor','Climatización','Instalación Solar','Calentador de Agua','Personalizado']
+      : ['Home Assessment','Heat Pump Install','Weatherization','Solar Install','Water Heater','Custom'];
+    Array.from(ntType.options).forEach((opt, i) => { if (projectTypes[i]) opt.text = projectTypes[i]; });
+  }
+
+  // PDF loading text
   s('pdf-loading-text', 'pdf_loading');
-  // detail action buttons re-rendered dynamically — handled in renderDetailActions()
+
+  // Topbar user (if logged in)
+  const tu = document.getElementById('topbarUser');
+  if (tu && tu.textContent.trim() !== '') tu.textContent = t('topbar_user');
+
+  // Mode badge — re-apply based on active view
+  const activeView = document.querySelector('.view.active');
+  if (activeView) {
+    const labels = { viewEntry:'entry_badge', viewCoordLogin:'coord_badge', viewContractorLookup:'contractor_badge', viewCoordDash:'coord_badge', viewCoordDetail:'coord_badge', viewContractor:'contractor_badge' };
+    document.getElementById('modeBadge').textContent = t(labels[activeView.id] || 'entry_badge');
+  }
 }
 
 function renderDetailActions() {
