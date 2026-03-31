@@ -8,809 +8,300 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-
   :root {
-    --brand: #6B2D0F;
-    --brand-mid: #8B3A12;
-    --brand-light: #A0522D;
-    --accent: #E87A2A;
-    --accent-light: #F59E0B;
-    --bg: #F7F3EF;
-    --surface: #FFF;
-    --surface2: #FDF8F4;
-    --border: #E8DDD4;
-    --border-dark: #D4C4B0;
-    --text: #1C1209;
-    --text2: #5C4033;
-    --text3: #9C7B6B;
-    --green: #16A34A;
-    --green-bg: #DCFCE7;
-    --green-dark: #166534;
-    --red: #DC2626;
-    --red-bg: #FEE2E2;
-    --red-dark: #991B1B;
-    --yellow: #D97706;
-    --yellow-bg: #FEF3C7;
-    --yellow-dark: #92400E;
-    --blue: #1D4ED8;
-    --blue-bg: #DBEAFE;
-    --gray: #6B7280;
-    --gray-bg: #F3F4F6;
-    /* aliases so existing CSS still works */
-    --green-light: #DCFCE7;
-    --green-accent: #16A34A;
-    --green-mid: #8B3A12;
-    --orange: #E87A2A;
-    --orange-light: #FEF3C7;
-    --gray-50: #F7F3EF;
-    --gray-100: #FDF8F4;
-    --gray-200: #E8DDD4;
-    --gray-400: #9C7B6B;
-    --gray-600: #5C4033;
-    --gray-800: #1C1209;
-    --white: #ffffff;
-    --shadow-sm: 0 1px 3px rgba(107,45,15,.08);
-    --shadow-md: 0 4px 12px rgba(107,45,15,.12);
-    --shadow-lg: 0 12px 32px rgba(107,45,15,.18);
-    --radius: 10px;
-    --radius-lg: 14px;
+    --brand:#6B2D0F;--brand-mid:#8B3A12;--brand-light:#A0522D;
+    --accent:#E87A2A;--accent-light:#F59E0B;
+    --bg:#F7F3EF;--surface:#FFF;--surface2:#FDF8F4;
+    --border:#E8DDD4;--border-dark:#D4C4B0;
+    --text:#1C1209;--text2:#5C4033;--text3:#9C7B6B;
+    --green:#16A34A;--green-bg:#DCFCE7;--green-dark:#166534;
+    --red:#DC2626;--red-bg:#FEE2E2;--red-dark:#991B1B;
+    --yellow:#D97706;--yellow-bg:#FEF3C7;--yellow-dark:#92400E;
+    --blue:#1D4ED8;--blue-bg:#DBEAFE;--gray:#6B7280;--gray-bg:#F3F4F6;
+    --green-light:#DCFCE7;--green-accent:#16A34A;--green-mid:#8B3A12;
+    --orange:#E87A2A;--orange-light:#FEF3C7;
+    --gray-50:#F7F3EF;--gray-100:#FDF8F4;--gray-200:#E8DDD4;
+    --gray-400:#9C7B6B;--gray-600:#5C4033;--gray-800:#1C1209;
+    --white:#ffffff;
+    --shadow-sm:0 1px 3px rgba(107,45,15,.08);
+    --shadow-md:0 4px 12px rgba(107,45,15,.12);
+    --shadow-lg:0 12px 32px rgba(107,45,15,.18);
+    --radius:10px;--radius-lg:14px;
   }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* TOPBAR */
+  .topbar{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-mid) 60%,var(--brand-light) 100%);color:white;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
+  .topbar-brand{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;letter-spacing:.04em;display:flex;align-items:center;gap:10px;}
+  .topbar-right{display:flex;align-items:center;gap:10px;font-size:13px;opacity:.9;}
+  .mode-badge{background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:12px;font-family:'DM Mono',monospace;}
+  .lang-toggle{display:flex;gap:3px;}
+  .lang-btn{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:5px;border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.55);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;letter-spacing:.04em;}
+  .lang-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--gray-50);
-    color: var(--gray-800);
-    min-height: 100vh;
-  }
+  /* VIEWS */
+  .view{display:none;}.view.active{display:block;}
 
-  /* ── TOPBAR ── */
-  .topbar {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-mid) 60%, var(--brand-light) 100%);
-    color: white;
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-  }
-  .topbar-brand {
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .topbar-brand .dot {
-    width: 8px; height: 8px;
-    background: var(--green-accent);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity:1; transform:scale(1); }
-    50% { opacity:0.6; transform:scale(1.3); }
-  }
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    opacity: 0.85;
-  }
-  .mode-badge {
-    background: rgba(255,255,255,0.15);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
-  }
+  /* ENTRY */
+  .entry-wrap{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:40px 20px;background:#ffffff;}
+  .entry-card{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:48px;max-width:460px;width:100%;text-align:center;}
+  .entry-logo{width:52px;height:52px;background:var(--brand);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:24px;}
+  .entry-card h1{font-size:22px;font-weight:700;color:var(--brand);margin-bottom:6px;}
+  .entry-card p{color:var(--gray-600);font-size:14px;margin-bottom:32px;}
+  .entry-divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--gray-400);font-size:12px;}
+  .entry-divider::before,.entry-divider::after{content:'';flex:1;height:1px;background:var(--gray-200);}
 
-  /* ── VIEWS ── */
-  .view { display: none; }
-  .view.active { display: block; }
+  /* BUTTONS */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border:none;cursor:pointer;transition:all .15s;}
+  .btn-primary{background:var(--accent);color:white;width:100%;justify-content:center;}
+  .btn-primary:hover{background:#d46b1a;transform:translateY(-1px);box-shadow:var(--shadow-md);}
+  .btn-outline{background:var(--surface);color:var(--brand);border:1.5px solid var(--border-dark);width:100%;justify-content:center;}
+  .btn-outline:hover{background:var(--surface2);border-color:var(--accent);}
+  .btn-sm{padding:7px 14px;font-size:13px;}
+  .btn-danger{background:var(--red);color:white;}.btn-danger:hover{background:#a93226;}
+  .btn-orange{background:var(--orange);color:white;}.btn-orange:hover{background:#c9691e;}
+  .btn-ghost{background:transparent;color:var(--gray-600);border:1.5px solid var(--gray-200);}
+  .btn-ghost:hover{background:var(--gray-100);color:var(--gray-800);}
 
-  /* ── LANDING / ENTRY ── */
-  .entry-wrap {
-    min-height: calc(100vh - 56px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    background: #ffffff;
-  }
-  .entry-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    padding: 48px;
-    max-width: 460px;
-    width: 100%;
-    text-align: center;
-  }
-  .entry-logo {
-    width: 52px; height: 52px;
-    background: var(--brand);
-    border-radius: 14px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-  }
-  .entry-card h1 {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--brand);
-    margin-bottom: 6px;
-  }
-  .entry-card p {
-    color: var(--gray-600);
-    font-size: 14px;
-    margin-bottom: 32px;
-  }
-  .entry-divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 24px 0;
-    color: var(--gray-400);
-    font-size: 12px;
-  }
-  .entry-divider::before, .entry-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--gray-200);
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 22px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    border: none;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-    width: 100%;
-    justify-content: center;
-  }
-  .btn-primary:hover { background: #d46b1a; transform: translateY(-1px); box-shadow: var(--shadow-md); }
-  .btn-outline {
-    background: var(--surface);
-    color: var(--brand);
-    border: 1.5px solid var(--border-dark);
-    width: 100%;
-    justify-content: center;
-  }
-  .btn-outline:hover { background: var(--surface2); border-color: var(--accent); }
-  .btn-sm { padding: 7px 14px; font-size: 13px; }
-  .btn-danger { background: var(--red); color: white; }
-  .btn-danger:hover { background: #a93226; }
-  .btn-orange { background: var(--orange); color: white; }
-  .btn-orange:hover { background: #c9691e; }
-  .btn-ghost {
-    background: transparent;
-    color: var(--gray-600);
-    border: 1.5px solid var(--gray-200);
-  }
-  .btn-ghost:hover { background: var(--gray-100); color: var(--gray-800); }
+  .input{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;transition:border-color .15s;background:white;}
+  .input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,122,42,.12);}
 
-  .input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid var(--gray-200);
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    transition: border-color 0.15s;
-    background: white;
-  }
-  .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,122,42,.12); }
+  /* DASHBOARD */
+  .coord-layout{max-width:1100px;margin:0 auto;padding:28px 20px;}
+  .coord-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+  .coord-header h2{font-size:20px;font-weight:700;color:var(--brand);}
+  .coord-header p{font-size:13px;color:var(--gray-600);margin-top:2px;}
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
+  .stat-card{background:var(--surface);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);border:1.5px solid var(--border);border-left:3px solid var(--accent);}
+  .stat-card.orange{border-left-color:var(--yellow);}.stat-card.red{border-left-color:var(--red);}.stat-card.gray{border-left-color:var(--gray);}
+  .stat-num{font-size:28px;font-weight:600;font-family:'DM Mono',monospace;line-height:1;}
+  .stat-label{font-size:12px;color:var(--gray-600);margin-top:4px;}
+  .section-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-600);margin-bottom:12px;}
+  .ticket-list{display:flex;flex-direction:column;gap:10px;}
+  .ticket-row{background:white;border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:16px;cursor:pointer;transition:box-shadow .15s,transform .12s;border-left:3px solid transparent;}
+  .ticket-row:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);border-color:var(--accent);}
+  .ticket-row.status-active{border-left-color:var(--yellow);}.ticket-row.status-complete{border-left-color:var(--green);}.ticket-row.status-pending{border-left-color:var(--gray);}
+  .ticket-id{font-family:'DM Mono',monospace;font-size:12px;color:var(--gray-600);min-width:80px;}
+  .ticket-info{flex:1;}.ticket-name{font-size:14px;font-weight:500;}.ticket-sub{font-size:12px;color:var(--gray-600);margin-top:2px;}
+  .ticket-progress-wrap{display:flex;align-items:center;gap:8px;min-width:120px;}
+  .progress-bar{flex:1;height:6px;background:var(--gray-200);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--green-accent);border-radius:99px;transition:width .4s;}
+  .progress-fill.orange{background:var(--orange);}
+  .progress-pct{font-size:12px;font-family:'DM Mono',monospace;color:var(--gray-600);min-width:32px;}
+  .status-chip{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;}
+  .chip-active{background:var(--orange-light);color:var(--orange);}
+  .chip-complete{background:var(--green-light);color:var(--green);}
+  .chip-pending{background:var(--gray-100);color:var(--gray-600);}
+  .chip-approved{background:var(--green-light);color:var(--green);}
+  .chip-rejected{background:var(--red-bg);color:var(--red);}
+  .empty-state{text-align:center;padding:48px 24px;color:var(--gray-400);}
+  .empty-state .icon{font-size:36px;margin-bottom:12px;}
+  .empty-state p{font-size:14px;}
 
-  /* ── COORDINATOR DASHBOARD ── */
-  .coord-layout {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 28px 20px;
-  }
-  .coord-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .coord-header h2 { font-size: 20px; font-weight: 700; color: var(--brand); }
-  .coord-header p { font-size: 13px; color: var(--gray-600); margin-top: 2px; }
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  .modal{background:white;border-radius:var(--radius-lg);padding:32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;transform:translateY(12px);transition:transform .2s;}
+  .modal-overlay.open .modal{transform:translateY(0);}
+  .modal h3{font-size:18px;font-weight:700;margin-bottom:20px;color:var(--brand);}
+  .form-group{margin-bottom:16px;}
+  .form-label{font-size:13px;font-weight:500;color:var(--gray-800);display:block;margin-bottom:6px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-footer{display:flex;gap:10px;margin-top:24px;justify-content:flex-end;}
+  .steps-builder{border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;}
+  .step-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--gray-100);font-size:13px;}
+  .step-item:last-child{border-bottom:none;}
+  .step-num{width:22px;height:22px;background:var(--yellow-bg);color:var(--yellow-dark);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+  .step-name{flex:1;}
+  .step-remove{background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:16px;line-height:1;padding:0 4px;}
+  .step-remove:hover{color:var(--red);}
+  .add-step-row{display:flex;gap:8px;padding:10px 14px;background:var(--gray-50);border-top:1px solid var(--gray-100);}
 
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 14px;
-    margin-bottom: 28px;
-  }
-  .stat-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    box-shadow: var(--shadow-sm);
-    border: 1.5px solid var(--border);
-    border-left: 3px solid var(--accent);
-  }
-  .stat-card.orange { border-left-color: var(--yellow); }
-  .stat-card.red { border-left-color: var(--red); }
-  .stat-card.gray { border-left-color: var(--gray); }
-  .stat-num { font-size: 28px; font-weight: 600; font-family: 'DM Mono', monospace; line-height: 1; }
-  .stat-label { font-size: 12px; color: var(--gray-600); margin-top: 4px; }
+  /* TICKET DETAIL */
+  .detail-layout{max-width:900px;margin:0 auto;padding:28px 20px;}
+  .detail-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+  .detail-back{background:none;border:none;color:var(--brand);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;margin-bottom:12px;}
+  .detail-back:hover{text-decoration:underline;}
+  .detail-title{font-size:20px;font-weight:700;color:var(--brand);}
+  .detail-meta{font-size:13px;color:var(--gray-600);margin-top:3px;}
+  .detail-actions{display:flex;gap:8px;margin-left:auto;}
+  .steps-grid{display:flex;flex-direction:column;gap:12px;}
+  .step-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;border-left:3px solid var(--gray-200);transition:border-left-color .2s;}
+  .step-card.done{border-left-color:var(--green-accent);}.step-card.approved{border-left-color:var(--green);}.step-card.rejected{border-left-color:var(--red);}
+  .step-card-header{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;user-select:none;}
+  .step-card-header:hover{background:var(--gray-50);}
+  .step-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;background:var(--gray-100);color:var(--gray-600);transition:all .2s;}
+  .step-circle.done{background:var(--green-accent);color:white;}.step-circle.approved{background:var(--green);color:white;}.step-circle.rejected{background:var(--red);color:white;}
+  .step-card-title{font-size:14px;font-weight:500;flex:1;}
+  .step-card-chips{display:flex;gap:6px;align-items:center;}
+  .step-chevron{color:var(--gray-400);font-size:16px;transition:transform .2s;}
+  .step-card.open .step-chevron{transform:rotate(180deg);}
+  .step-card-body{display:none;padding:0 18px 18px 60px;}
+  .step-card.open .step-card-body{display:block;}
+  .submission-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .submission-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--gray-50);border-radius:8px;font-size:13px;}
+  .submission-icon{font-size:18px;}.submission-name{flex:1;font-weight:500;}.submission-meta{font-size:11px;color:var(--gray-600);}
+  .coord-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;}
+  .comment-box{width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical;margin-top:10px;min-height:64px;}
+  .comment-box:focus{outline:none;border-color:var(--accent);}
+  .comment-thread{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+  .comment-bubble{padding:8px 12px;border-radius:8px;font-size:13px;line-height:1.5;}
+  .comment-bubble.coord{background:var(--yellow-bg);}.comment-bubble.contractor{background:var(--gray-bg);}
+  .comment-author{font-weight:600;font-size:11px;margin-bottom:2px;color:var(--gray-600);}
 
-  .section-title {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--gray-600);
-    margin-bottom: 12px;
-  }
+  /* CONTRACTOR VIEW */
+  .contractor-layout{max-width:680px;margin:0 auto;padding:28px 20px;}
+  .contractor-header{background:white;border-radius:var(--radius-lg);padding:22px 24px;box-shadow:var(--shadow-sm);margin-bottom:20px;}
+  .contractor-header h2{font-size:18px;font-weight:700;color:var(--brand);}
+  .contractor-header p{font-size:13px;color:var(--gray-600);margin-top:4px;}
+  .contractor-progress{margin-top:14px;display:flex;align-items:center;gap:10px;}
+  .contractor-steps{display:flex;flex-direction:column;gap:10px;}
+  .cstep-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;border-left:3px solid var(--gray-200);}
+  .cstep-card.done{border-left-color:var(--green-accent);}.cstep-card.rejected{border-left-color:var(--red);}
+  .cstep-header{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;user-select:none;}
+  .cstep-header:hover{background:var(--gray-50);}
+  .cstep-title{font-size:14px;font-weight:500;flex:1;}
+  .cstep-body{display:none;padding:4px 18px 18px 60px;}
+  .cstep-card.open .cstep-body{display:block;}
+  .cstep-card.open .step-chevron{transform:rotate(180deg);}
+  .upload-zone{border:2px dashed var(--gray-200);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:12px;position:relative;}
+  .upload-zone:hover{border-color:var(--accent);background:var(--surface2);}
+  .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .upload-zone-icon{font-size:24px;margin-bottom:6px;}
+  .upload-zone-text{font-size:13px;color:var(--gray-600);}
+  .upload-zone-hint{font-size:11px;color:var(--gray-400);margin-top:2px;}
+  .uploaded-files{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+  .uploaded-file{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--gray-50);border-radius:8px;font-size:13px;}
+  .uploaded-file .icon{font-size:16px;}.uploaded-file .name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .uploaded-file .size{font-size:11px;color:var(--gray-400);}
+  .uploaded-file .remove{background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:16px;}
+  .uploaded-file .remove:hover{color:var(--red);}
+  .field-group{margin-bottom:12px;}
+  .field-group label{font-size:12px;font-weight:500;color:var(--gray-600);display:block;margin-bottom:4px;}
+  .signature-pad-wrap{border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;margin-bottom:10px;position:relative;background:white;}
+  .signature-pad-wrap canvas{display:block;touch-action:none;cursor:crosshair;}
+  .sig-toolbar{display:flex;gap:6px;padding:6px 10px;background:var(--gray-50);border-top:1px solid var(--gray-100);}
+  .mark-complete-btn{width:100%;margin-top:14px;}
 
-  /* Ticket list */
-  .ticket-list { display: flex; flex-direction: column; gap: 10px; }
-  .ticket-row {
-    background: white;
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    transition: box-shadow 0.15s, transform 0.12s;
-    border-left: 3px solid transparent;
-  }
-  .ticket-row:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); border-color: var(--accent); }
-  .ticket-row.status-active { border-left-color: var(--yellow); }
-  .ticket-row.status-complete { border-left-color: var(--green); }
-  .ticket-row.status-pending { border-left-color: var(--gray); }
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:white;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .pdf-loading{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:none;align-items:center;justify-content:center;}
+  .pdf-loading.show{display:flex;}
+  .pdf-loading-card{background:white;border-radius:var(--radius-lg);padding:32px 40px;text-align:center;}
+  .spinner{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.3);}}
 
-  .ticket-id {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--gray-600);
-    min-width: 80px;
-  }
-  .ticket-info { flex: 1; }
-  .ticket-name { font-size: 14px; font-weight: 500; }
-  .ticket-sub { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
-  .ticket-progress-wrap { display: flex; align-items: center; gap: 8px; min-width: 120px; }
-  .progress-bar {
-    flex: 1;
-    height: 6px;
-    background: var(--gray-200);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--green-accent);
-    border-radius: 99px;
-    transition: width 0.4s;
-  }
-  .progress-fill.orange { background: var(--orange); }
-  .progress-pct { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--gray-600); min-width: 32px; }
-  .status-chip {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .chip-active { background: var(--orange-light); color: var(--orange); }
-  .chip-complete { background: var(--green-light); color: var(--green); }
-  .chip-pending { background: var(--gray-100); color: var(--gray-600); }
-  .chip-approved { background: var(--green-light); color: var(--green); }
-  .chip-rejected { background: var(--red-light); color: var(--red); }
-
-  .empty-state {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--gray-400);
-  }
-  .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
-  .empty-state p { font-size: 14px; }
-
-  /* ── NEW TICKET MODAL ── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 32px;
-    width: 100%;
-    max-width: 520px;
-    max-height: 90vh;
-    overflow-y: auto;
-    transform: translateY(12px);
-    transition: transform 0.2s;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--brand); }
-  .form-group { margin-bottom: 16px; }
-  .form-label { font-size: 13px; font-weight: 500; color: var(--gray-800); display: block; margin-bottom: 6px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .modal-footer { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
-
-  /* Steps builder */
-  .steps-builder { border: 1.5px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
-  .step-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--gray-100);
-    font-size: 13px;
-  }
-  .step-item:last-child { border-bottom: none; }
-  .step-num {
-    width: 22px; height: 22px;
-    background: var(--yellow-bg);
-    color: var(--yellow-dark);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-  .step-name { flex: 1; }
-  .step-remove {
-    background: none;
-    border: none;
-    color: var(--gray-400);
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-    padding: 0 4px;
-  }
-  .step-remove:hover { color: var(--red); }
-  .add-step-row {
-    display: flex;
-    gap: 8px;
-    padding: 10px 14px;
-    background: var(--gray-50);
-    border-top: 1px solid var(--gray-100);
-  }
-
-  /* ── TICKET DETAIL (Coordinator view) ── */
-  .detail-layout {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 28px 20px;
-  }
-  .detail-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-  .detail-back {
-    background: none;
-    border: none;
-    color: var(--brand);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 0;
-    margin-bottom: 12px;
-  }
-  .detail-back:hover { text-decoration: underline; }
-  .detail-title { font-size: 20px; font-weight: 700; color: var(--brand); }
-  .detail-meta { font-size: 13px; color: var(--gray-600); margin-top: 3px; }
-  .detail-actions { display: flex; gap: 8px; margin-left: auto; }
-
-  .steps-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .step-card {
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    border-left: 3px solid var(--gray-200);
-    transition: border-left-color 0.2s;
-  }
-  .step-card.done { border-left-color: var(--green-accent); }
-  .step-card.approved { border-left-color: var(--green); }
-  .step-card.rejected { border-left-color: var(--red); }
-
-  .step-card-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .step-card-header:hover { background: var(--gray-50); }
-  .step-circle {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 600;
-    flex-shrink: 0;
-    background: var(--gray-100);
-    color: var(--gray-600);
-    transition: all 0.2s;
-  }
-  .step-circle.done { background: var(--green-accent); color: white; }
-  .step-circle.approved { background: var(--green); color: white; }
-  .step-circle.rejected { background: var(--red); color: white; }
-  .step-card-title { font-size: 14px; font-weight: 500; flex: 1; }
-  .step-card-chips { display: flex; gap: 6px; align-items: center; }
-  .step-chevron { color: var(--gray-400); font-size: 16px; transition: transform 0.2s; }
-  .step-card.open .step-chevron { transform: rotate(180deg); }
-
-  .step-card-body {
-    display: none;
-    padding: 0 18px 18px 60px;
-  }
-  .step-card.open .step-card-body { display: block; }
-
-  .submission-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-  .submission-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: var(--gray-50);
-    border-radius: 8px;
-    font-size: 13px;
-  }
-  .submission-icon { font-size: 18px; }
-  .submission-name { flex: 1; font-weight: 500; }
-  .submission-meta { font-size: 11px; color: var(--gray-600); }
-  .submission-view {
-    font-size: 12px;
-    color: var(--green);
-    cursor: pointer;
-    font-weight: 500;
-    text-decoration: underline;
-  }
-
-  .coord-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-  .comment-box {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1.5px solid var(--gray-200);
-    border-radius: 8px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    resize: vertical;
-    margin-top: 10px;
-    min-height: 64px;
-  }
-  .comment-box:focus { outline: none; border-color: var(--accent); }
-
-  .comment-thread { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .comment-bubble {
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-  .comment-bubble.coord { background: var(--yellow-bg); }
-  .comment-bubble.contractor { background: var(--gray-bg); }
-  .comment-author { font-weight: 600; font-size: 11px; margin-bottom: 2px; color: var(--gray-600); }
-
-  /* ── CONTRACTOR VIEW ── */
-  .contractor-layout {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 28px 20px;
-  }
-  .contractor-header {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 22px 24px;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 20px;
-  }
-  .contractor-header h2 { font-size: 18px; font-weight: 700; color: var(--brand); }
-  .contractor-header p { font-size: 13px; color: var(--gray-600); margin-top: 4px; }
-  .contractor-progress {
-    margin-top: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .contractor-steps { display: flex; flex-direction: column; gap: 10px; }
-
-  .cstep-card {
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    border-left: 3px solid var(--gray-200);
-  }
-  .cstep-card.done { border-left-color: var(--green-accent); }
-  .cstep-card.rejected { border-left-color: var(--red); }
-  .cstep-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .cstep-header:hover { background: var(--gray-50); }
-  .cstep-title { font-size: 14px; font-weight: 500; flex: 1; }
-  .cstep-body {
-    display: none;
-    padding: 4px 18px 18px 60px;
-  }
-  .cstep-card.open .cstep-body { display: block; }
-  .cstep-card.open .step-chevron { transform: rotate(180deg); }
-
-  .upload-zone {
-    border: 2px dashed var(--gray-200);
-    border-radius: 8px;
-    padding: 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-bottom: 12px;
-    position: relative;
-  }
-  .upload-zone:hover { border-color: var(--accent); background: var(--surface2); }
-  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .upload-zone-icon { font-size: 24px; margin-bottom: 6px; }
-  .upload-zone-text { font-size: 13px; color: var(--gray-600); }
-  .upload-zone-hint { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
-
-  .uploaded-files { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-  .uploaded-file {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: var(--gray-50);
-    border-radius: 8px;
-    font-size: 13px;
-  }
-  .uploaded-file .icon { font-size: 16px; }
-  .uploaded-file .name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .uploaded-file .size { font-size: 11px; color: var(--gray-400); }
-  .uploaded-file .remove { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: 16px; }
-  .uploaded-file .remove:hover { color: var(--red); }
-
-  .field-group { margin-bottom: 12px; }
-  .field-group label { font-size: 12px; font-weight: 500; color: var(--gray-600); display: block; margin-bottom: 4px; }
-
-  .signature-pad-wrap {
-    border: 1.5px solid var(--gray-200);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    position: relative;
-    background: white;
-  }
-  .signature-pad-wrap canvas { display: block; touch-action: none; cursor: crosshair; }
-  .sig-toolbar {
-    display: flex;
-    gap: 6px;
-    padding: 6px 10px;
-    background: var(--gray-50);
-    border-top: 1px solid var(--gray-100);
-  }
-
-  .mark-complete-btn {
-    width: 100%;
-    margin-top: 14px;
-  }
-
-  /* notification toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--green);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: var(--shadow-lg);
-    z-index: 999;
-    transform: translateY(80px);
-    opacity: 0;
-    transition: all 0.3s;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  /* PDF export loading */
-  .pdf-loading {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    display: none;
-  }
-  .pdf-loading.show { display: flex; }
-  .pdf-loading-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 32px 40px;
-    text-align: center;
-  }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid var(--gray-200);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 14px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; }
-    .stats-row { grid-template-columns: 1fr 1fr; }
-    .ticket-progress-wrap { display: none; }
-    .entry-card { padding: 28px 20px; }
-    .detail-actions { width: 100%; }
-    .coord-actions { flex-direction: column; }
+  @media(max-width:600px){
+    .form-row{grid-template-columns:1fr;}
+    .stats-row{grid-template-columns:1fr 1fr;}
+    .ticket-progress-wrap{display:none;}
+    .entry-card{padding:28px 20px;}
+    .detail-actions{width:100%;}
+    .coord-actions{flex-direction:column;}
   }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-  <div class="topbar-brand">
-    CONTRACTOR PORTAL
-  </div>
+  <div class="topbar-brand">ENERGY TRUST — CONTRACTOR PORTAL</div>
   <div class="topbar-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="lb-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="lb-es" onclick="setLang('es')">ES</button>
+    </div>
     <span class="mode-badge" id="modeBadge">ENTRY</span>
     <span id="topbarUser"></span>
   </div>
 </div>
 
-<!-- ─────────── ENTRY VIEW ─────────── -->
+<!-- ENTRY -->
 <div class="view active" id="viewEntry">
   <div class="entry-wrap">
     <div class="entry-card">
       <div class="entry-logo">🏠</div>
-      <h1>Contractor Portal</h1>
-      <p>Submit project paperwork, track your checklist, and keep your coordinator up to date — without the email chain.</p>
-      <button class="btn btn-primary" onclick="showContractorLookup()">📋 I have a ticket link</button>
-      <div class="entry-divider">or</div>
-      <button class="btn btn-outline" onclick="showCoordLogin()">🔑 Coordinator login</button>
+      <h1 id="entry-title">Contractor Portal</h1>
+      <p id="entry-sub">Submit project paperwork, track your checklist, and keep your coordinator up to date — without the email chain.</p>
+      <button class="btn btn-primary" id="btn-have-ticket" onclick="showContractorLookup()">📋 I have a ticket link</button>
+      <div class="entry-divider" id="entry-or">or</div>
+      <button class="btn btn-outline" id="btn-coord-login" onclick="showCoordLogin()">🔑 Coordinator login</button>
     </div>
   </div>
 </div>
 
-<!-- ─────────── COORDINATOR LOGIN ─────────── -->
+<!-- COORDINATOR LOGIN -->
 <div class="view" id="viewCoordLogin">
   <div class="entry-wrap">
     <div class="entry-card">
       <div class="entry-logo">🔑</div>
-      <h1>Coordinator Access</h1>
-      <p>Enter your coordinator PIN to manage tickets.</p>
+      <h1 id="coord-login-title">Coordinator Access</h1>
+      <p id="coord-login-sub">Enter your coordinator PIN to manage tickets.</p>
       <div class="form-group">
         <input class="input" type="password" id="coordPinInput" placeholder="Enter PIN (default: 1234)" onkeydown="if(event.key==='Enter')coordLogin()">
       </div>
-      <button class="btn btn-primary" onclick="coordLogin()">Sign In</button>
+      <button class="btn btn-primary" id="btn-sign-in" onclick="coordLogin()">Sign In</button>
       <div style="margin-top:12px">
-        <button class="btn btn-ghost btn-sm" onclick="showView('viewEntry')">← Back</button>
+        <button class="btn btn-ghost btn-sm" id="btn-back-login" onclick="showView('viewEntry')">← Back</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ─────────── CONTRACTOR LOOKUP ─────────── -->
+<!-- CONTRACTOR LOOKUP -->
 <div class="view" id="viewContractorLookup">
   <div class="entry-wrap">
     <div class="entry-card">
       <div class="entry-logo">📋</div>
-      <h1>Open Your Ticket</h1>
-      <p>Enter the ticket code your coordinator shared with you.</p>
+      <h1 id="lookup-title">Open Your Ticket</h1>
+      <p id="lookup-sub">Enter the ticket code your coordinator shared with you.</p>
       <div class="form-group">
         <input class="input" type="text" id="ticketCodeInput" placeholder="e.g. ET-2024-001" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')openContractorTicket()">
       </div>
-      <button class="btn btn-primary" onclick="openContractorTicket()">Open Ticket →</button>
+      <button class="btn btn-primary" id="btn-open-ticket" onclick="openContractorTicket()">Open Ticket →</button>
       <div style="margin-top:12px">
-        <button class="btn btn-ghost btn-sm" onclick="showView('viewEntry')">← Back</button>
+        <button class="btn btn-ghost btn-sm" id="btn-back-lookup" onclick="showView('viewEntry')">← Back</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ─────────── COORDINATOR DASHBOARD ─────────── -->
+<!-- COORDINATOR DASHBOARD -->
 <div class="view" id="viewCoordDash">
   <div class="coord-layout">
     <div class="coord-header">
       <div>
-        <h2>Dashboard</h2>
-        <p>All contractor tickets</p>
+        <h2 id="dash-title">Dashboard</h2>
+        <p id="dash-sub">All contractor tickets</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="coordLogout()">Sign out</button>
-        <button class="btn btn-primary btn-sm" onclick="openNewTicketModal()">+ New Ticket</button>
+        <button class="btn btn-ghost btn-sm" id="btn-signout" onclick="coordLogout()">Sign out</button>
+        <button class="btn btn-primary btn-sm" id="btn-new-ticket" onclick="openNewTicketModal()">+ New Ticket</button>
       </div>
     </div>
     <div class="stats-row" id="statsRow"></div>
-    <div class="section-title">All Tickets</div>
+    <div class="section-title" id="section-all-tickets">All Tickets</div>
     <div class="ticket-list" id="ticketList"></div>
   </div>
 </div>
 
-<!-- ─────────── COORDINATOR TICKET DETAIL ─────────── -->
+<!-- COORDINATOR TICKET DETAIL -->
 <div class="view" id="viewCoordDetail">
   <div class="detail-layout">
-    <button class="detail-back" onclick="showCoordDash()">← All tickets</button>
+    <button class="detail-back" id="btn-all-tickets" onclick="showCoordDash()">← All tickets</button>
     <div class="detail-header">
       <div style="flex:1">
         <div class="detail-title" id="detailTitle">—</div>
         <div class="detail-meta" id="detailMeta">—</div>
       </div>
-      <div class="detail-actions">
-        <button class="btn btn-ghost btn-sm" onclick="copyTicketLink()">🔗 Copy link</button>
-        <button class="btn btn-sm btn-orange" onclick="exportPDF()">⬇ Export PDF</button>
-        <button class="btn btn-sm btn-primary" onclick="emailSummary()">✉ Email summary</button>
-        <button class="btn btn-sm btn-danger" onclick="closeTicket()" title="Export PDF then delete all files from storage">🗑 Close & Clean</button>
-      </div>
+      <div class="detail-actions" id="detailActions"></div>
     </div>
     <div id="detailSteps" class="steps-grid"></div>
   </div>
 </div>
 
-<!-- ─────────── CONTRACTOR TICKET VIEW ─────────── -->
+<!-- CONTRACTOR TICKET VIEW -->
 <div class="view" id="viewContractor">
   <div class="contractor-layout">
     <div class="contractor-header">
@@ -823,22 +314,22 @@
         <span style="font-size:13px;color:var(--gray-600);font-family:'DM Mono',monospace" id="cProgressText">0 / 0</span>
       </div>
     </div>
-    <div class="section-title">Your checklist — complete in any order</div>
+    <div class="section-title" id="checklist-section-title">Your checklist — complete in any order</div>
     <div class="contractor-steps" id="contractorSteps"></div>
   </div>
 </div>
 
-<!-- ─────────── NEW TICKET MODAL ─────────── -->
+<!-- NEW TICKET MODAL -->
 <div class="modal-overlay" id="newTicketModal">
   <div class="modal">
-    <h3>Create New Ticket</h3>
+    <h3 id="modal-title">Create New Ticket</h3>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Ticket ID</label>
+        <label class="form-label" id="label-ticket-id">Ticket ID</label>
         <input class="input" id="ntId" placeholder="ET-2024-001" style="text-transform:uppercase">
       </div>
       <div class="form-group">
-        <label class="form-label">Project Type</label>
+        <label class="form-label" id="label-project-type">Project Type</label>
         <select class="input" id="ntType">
           <option>Home Assessment</option>
           <option>Heat Pump Install</option>
@@ -851,56 +342,49 @@
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Contractor Name</label>
+        <label class="form-label" id="label-contractor-name">Contractor Name</label>
         <input class="input" id="ntContractor" placeholder="Jane Smith">
       </div>
       <div class="form-group">
-        <label class="form-label">Contractor Email</label>
+        <label class="form-label" id="label-contractor-email">Contractor Email</label>
         <input class="input" id="ntEmail" type="email" placeholder="jane@contractor.com">
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Property Address</label>
+      <label class="form-label" id="label-address">Property Address</label>
       <input class="input" id="ntAddress" placeholder="123 Main St, Portland OR">
     </div>
     <div class="form-group">
-      <label class="form-label">Checklist Steps</label>
+      <label class="form-label" id="label-steps">Checklist Steps</label>
       <div class="steps-builder">
         <div id="stepsList"></div>
         <div class="add-step-row">
           <input class="input" id="newStepInput" placeholder="Add a step..." style="flex:1" onkeydown="if(event.key==='Enter'){addStep();event.preventDefault()}">
-          <button class="btn btn-primary btn-sm" onclick="addStep()">Add</button>
+          <button class="btn btn-primary btn-sm" id="btn-add-step" onclick="addStep()">Add</button>
         </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeNewTicketModal()">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="createTicket()">Create Ticket</button>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-modal" onclick="closeNewTicketModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="btn-create-ticket" onclick="createTicket()">Create Ticket</button>
     </div>
   </div>
 </div>
 
-<!-- ─────────── TOAST ─────────── -->
 <div class="toast" id="toast"></div>
-
-<!-- ─────────── PDF LOADING ─────────── -->
 <div class="pdf-loading" id="pdfLoading">
   <div class="pdf-loading-card">
     <div class="spinner"></div>
-    <div style="font-size:14px;font-weight:500;color:var(--green)">Generating PDF packet…</div>
+    <div id="pdf-loading-text" style="font-size:14px;font-weight:500;color:var(--green)">Generating PDF packet…</div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-//  DATA LAYER  (Supabase)
-// ═══════════════════════════════════════════════
+// ── SUPABASE ──
 const COORD_PIN = '1234';
 const SUPABASE_URL = 'https://tpbjsqwqfgwjymdcfouw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_v7bPMHffLqZCZvma_D_cJg_L1sMVo3L';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// Local cache for speed
 let _cache = {};
 
 async function loadTickets() {
@@ -911,13 +395,11 @@ async function loadTickets() {
   tickets.forEach(t => _cache[t.id] = t);
   return tickets;
 }
-
 async function saveTicket(ticket) {
   _cache[ticket.id] = ticket;
   const { error } = await sb.from('tickets').upsert({ id: ticket.id, data: ticket, updated_at: new Date().toISOString() });
   if (error) console.error('Save error:', error);
 }
-
 async function getTicket(id) {
   if (_cache[id]) return _cache[id];
   const { data, error } = await sb.from('tickets').select('data').eq('id', id).single();
@@ -925,28 +407,18 @@ async function getTicket(id) {
   _cache[id] = data.data;
   return data.data;
 }
-
-async function updateTicket(updated) {
-  await saveTicket(updated);
-}
-
-// File upload to Supabase Storage
+async function updateTicket(updated) { await saveTicket(updated); }
 async function uploadFileToStorage(ticketId, stepIndex, file) {
-  // sanitize filename - remove spaces and special chars
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const path = `${ticketId}/${stepIndex}/${Date.now()}_${safeName}`;
   const { data, error } = await sb.storage.from('ticket-files').upload(path, file, { upsert: true, contentType: file.type });
   if (error) { console.error('Upload error:', error); return null; }
   const { data: urlData } = sb.storage.from('ticket-files').getPublicUrl(path);
-  console.log('Uploaded:', file.name, '→', urlData.publicUrl);
   return { path, url: urlData.publicUrl, name: file.name, type: file.type };
 }
-
 async function deleteTicketFiles(ticketId) {
-  // List all files for this ticket
   const { data: list } = await sb.storage.from('ticket-files').list(ticketId, { limit: 1000 });
   if (!list || !list.length) return;
-  // List subfolders
   for (const folder of list) {
     const { data: subList } = await sb.storage.from('ticket-files').list(`${ticketId}/${folder.name}`, { limit: 1000 });
     if (subList && subList.length) {
@@ -956,754 +428,548 @@ async function deleteTicketFiles(ticketId) {
   }
 }
 
-// ═══════════════════════════════════════════════
-//  VIEW ROUTING
-// ═══════════════════════════════════════════════
+// ── LANGUAGE ──
+let currentLang = 'en';
+const T = {
+  en: {
+    entry_badge:'ENTRY', coord_badge:'COORDINATOR', contractor_badge:'CONTRACTOR',
+    topbar_user:'Coordinator',
+    entry_title:'Contractor Portal',
+    entry_sub:'Submit project paperwork, track your checklist, and keep your coordinator up to date — without the email chain.',
+    btn_have_ticket:'📋 I have a ticket link', btn_coord_login:'🔑 Coordinator login', entry_or:'or',
+    coord_login_title:'Coordinator Access', coord_login_sub:'Enter your coordinator PIN to manage tickets.',
+    coord_pin_placeholder:'Enter PIN (default: 1234)', btn_sign_in:'Sign In', btn_back:'← Back',
+    lookup_title:'Open Your Ticket', lookup_sub:'Enter the ticket code your coordinator shared with you.',
+    ticket_placeholder:'e.g. ET-2024-001', btn_open_ticket:'Open Ticket →',
+    dash_title:'Dashboard', dash_sub:'All contractor tickets',
+    btn_signout:'Sign out', btn_new_ticket:'+ New Ticket',
+    stat_total:'Total Tickets', stat_active:'In Progress', stat_complete:'Completed', stat_pending:'Not Started',
+    section_all_tickets:'All Tickets',
+    btn_all_tickets:'← All tickets',
+    btn_copy_link:'🔗 Copy link', btn_export_pdf:'⬇ Export PDF', btn_email_summary:'✉ Email summary', btn_close_clean:'🗑 Close & Clean',
+    btn_approve:'✓ Approve', btn_reject:'✕ Reject', btn_comment:'💬 Comment',
+    coord_comment_placeholder:'Leave a comment for contractor…',
+    checklist_section:'Your checklist — complete in any order',
+    upload_section:'Upload files', upload_zone_text:'Click to upload photos or PDFs', upload_zone_hint:'JPG, PNG, PDF accepted',
+    fields_section:'Form fields', sig_section:'Signature', sign_above:'Sign above',
+    btn_clear_sig:'Clear', btn_save_sig:'Save',
+    btn_mark_complete:'Mark as Complete', btn_submitted:'✓ Submitted',
+    chip_approved:'Approved ✓', chip_revision:'Needs revision', chip_submitted:'Submitted', sig_on_file:'Signature on file',
+    coord_label:'Coordinator', contractor_label:'Contractor',
+    modal_title:'Create New Ticket',
+    label_ticket_id:'Ticket ID', label_project_type:'Project Type',
+    label_contractor_name:'Contractor Name', label_contractor_email:'Contractor Email',
+    label_address:'Property Address', label_steps:'Checklist Steps',
+    placeholder_step:'Add a step...', btn_add:'Add', btn_cancel:'Cancel', btn_create:'Create Ticket',
+    assigned_to:'Assigned to', progress_complete:'complete', enter_field:'Enter value…',
+    loading_tickets:'Loading tickets…', no_tickets:'No tickets yet. Create the first one.',
+    toast_link_copied:'Link copied to clipboard', toast_uploading:'Uploading file(s)…',
+    toast_uploaded:'file(s) uploaded ✓', toast_step_submitted:'Step submitted to coordinator ✓',
+    toast_approved:'Step approved', toast_rejected:'Step returned to contractor',
+    toast_comment_added:'Comment added', toast_sig_saved:'Signature saved',
+    toast_ticket_closed:'Ticket closed — files deleted, PDF saved ✓',
+    toast_not_found:'Ticket not found. Check the code and try again.',
+    toast_bad_pin:'Incorrect PIN', toast_fill_fields:'Fill in all required fields',
+    toast_id_exists:'Ticket ID already exists', toast_looking_up:'Looking up ticket…',
+    close_confirm:'This will export the PDF and delete all uploaded files from storage to free space. Continue?',
+    pdf_header:'ENERGY TRUST OF OREGON — CONTRACTOR PACKET', pdf_generated:'Generated',
+    status_approved:'APPROVED', status_submitted:'SUBMITTED', status_rejected:'REJECTED', status_pending:'PENDING',
+    pdf_loading:'Generating PDF packet…',
+  },
+  es: {
+    entry_badge:'ENTRADA', coord_badge:'COORDINADOR', contractor_badge:'CONTRATISTA',
+    topbar_user:'Coordinador',
+    entry_title:'Portal del Contratista',
+    entry_sub:'Sube documentos, revisa tu lista de pasos y mantén a tu coordinador al día — sin cadenas de correo.',
+    btn_have_ticket:'📋 Tengo un enlace de ticket', btn_coord_login:'🔑 Acceso de coordinador', entry_or:'o',
+    coord_login_title:'Acceso de Coordinador', coord_login_sub:'Ingresa tu PIN de coordinador para gestionar tickets.',
+    coord_pin_placeholder:'Ingresa PIN (predeterminado: 1234)', btn_sign_in:'Iniciar sesión', btn_back:'← Regresar',
+    lookup_title:'Abrir Tu Ticket', lookup_sub:'Ingresa el código de ticket que te compartió tu coordinador.',
+    ticket_placeholder:'ej. ET-2024-001', btn_open_ticket:'Abrir Ticket →',
+    dash_title:'Panel de Control', dash_sub:'Todos los tickets de contratistas',
+    btn_signout:'Cerrar sesión', btn_new_ticket:'+ Nuevo Ticket',
+    stat_total:'Total de Tickets', stat_active:'En Progreso', stat_complete:'Completados', stat_pending:'Sin Iniciar',
+    section_all_tickets:'Todos los Tickets',
+    btn_all_tickets:'← Todos los tickets',
+    btn_copy_link:'🔗 Copiar enlace', btn_export_pdf:'⬇ Exportar PDF', btn_email_summary:'✉ Enviar resumen', btn_close_clean:'🗑 Cerrar y Limpiar',
+    btn_approve:'✓ Aprobar', btn_reject:'✕ Rechazar', btn_comment:'💬 Comentar',
+    coord_comment_placeholder:'Deja un comentario para el contratista…',
+    checklist_section:'Tu lista de pasos — completa en cualquier orden',
+    upload_section:'Subir archivos', upload_zone_text:'Toca para subir fotos o PDFs', upload_zone_hint:'Se aceptan JPG, PNG, PDF',
+    fields_section:'Campos del formulario', sig_section:'Firma', sign_above:'Firma arriba',
+    btn_clear_sig:'Borrar', btn_save_sig:'Guardar',
+    btn_mark_complete:'Marcar como completado', btn_submitted:'✓ Enviado',
+    chip_approved:'Aprobado ✓', chip_revision:'Necesita revisión', chip_submitted:'Enviado', sig_on_file:'Firma registrada',
+    coord_label:'Coordinador', contractor_label:'Contratista',
+    modal_title:'Crear Nuevo Ticket',
+    label_ticket_id:'ID del Ticket', label_project_type:'Tipo de Proyecto',
+    label_contractor_name:'Nombre del Contratista', label_contractor_email:'Correo del Contratista',
+    label_address:'Dirección de la Propiedad', label_steps:'Pasos del Checklist',
+    placeholder_step:'Agregar un paso...', btn_add:'Agregar', btn_cancel:'Cancelar', btn_create:'Crear Ticket',
+    assigned_to:'Asignado a', progress_complete:'completado', enter_field:'Ingresa valor…',
+    loading_tickets:'Cargando tickets…', no_tickets:'No hay tickets aún. Crea el primero.',
+    toast_link_copied:'Enlace copiado al portapapeles', toast_uploading:'Subiendo archivo(s)…',
+    toast_uploaded:'archivo(s) subido(s) ✓', toast_step_submitted:'Paso enviado al coordinador ✓',
+    toast_approved:'Paso aprobado', toast_rejected:'Paso devuelto al contratista',
+    toast_comment_added:'Comentario agregado', toast_sig_saved:'Firma guardada',
+    toast_ticket_closed:'Ticket cerrado — archivos eliminados, PDF guardado ✓',
+    toast_not_found:'Ticket no encontrado. Revisa el código e intenta de nuevo.',
+    toast_bad_pin:'PIN incorrecto', toast_fill_fields:'Completa todos los campos requeridos',
+    toast_id_exists:'Este ID de ticket ya existe', toast_looking_up:'Buscando ticket…',
+    close_confirm:'Esto exportará el PDF y eliminará todos los archivos subidos para liberar espacio. ¿Continuar?',
+    pdf_header:'ENERGY TRUST DE OREGON — PAQUETE DEL CONTRATISTA', pdf_generated:'Generado',
+    status_approved:'APROBADO', status_submitted:'ENVIADO', status_rejected:'RECHAZADO', status_pending:'PENDIENTE',
+    pdf_loading:'Generando paquete PDF…',
+  }
+};
+function t(key) { return T[currentLang][key] || T['en'][key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById('lb-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lb-es').classList.toggle('active', lang === 'es');
+  applyTranslations();
+  const activeId = document.querySelector('.view.active').id;
+  if (activeId === 'viewCoordDash') renderDash();
+  else if (activeId === 'viewCoordDetail' && currentTicketId) openTicketDetail(currentTicketId);
+  else if (activeId === 'viewContractor' && contractorTicketId) getTicket(contractorTicketId).then(renderContractorView);
+}
+
+function applyTranslations() {
+  const s = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = t(key); };
+  const si = (id, key) => { const el = document.getElementById(id); if (el) el.innerHTML = t(key); };
+  const sp = (id, key) => { const el = document.getElementById(id); if (el) el.placeholder = t(key); };
+  si('entry-title', 'entry_title'); si('entry-sub', 'entry_sub');
+  si('btn-have-ticket', 'btn_have_ticket'); si('btn-coord-login', 'btn_coord_login');
+  s('coord-login-title', 'coord_login_title'); s('coord-login-sub', 'coord_login_sub');
+  sp('coordPinInput', 'coord_pin_placeholder');
+  s('btn-sign-in', 'btn_sign_in'); s('btn-back-login', 'btn_back'); s('btn-back-lookup', 'btn_back');
+  s('lookup-title', 'lookup_title'); s('lookup-sub', 'lookup_sub');
+  sp('ticketCodeInput', 'ticket_placeholder');
+  s('btn-open-ticket', 'btn_open_ticket');
+  s('dash-title', 'dash_title'); s('dash-sub', 'dash_sub');
+  s('btn-signout', 'btn_signout'); s('btn-new-ticket', 'btn_new_ticket');
+  s('section-all-tickets', 'section_all_tickets');
+  s('btn-all-tickets', 'btn_all_tickets');
+  s('checklist-section-title', 'checklist_section');
+  s('modal-title', 'modal_title');
+  s('label-ticket-id', 'label_ticket_id'); s('label-project-type', 'label_project_type');
+  s('label-contractor-name', 'label_contractor_name'); s('label-contractor-email', 'label_contractor_email');
+  s('label-address', 'label_address'); s('label-steps', 'label_steps');
+  sp('newStepInput', 'placeholder_step');
+  s('btn-add-step', 'btn_add'); s('btn-cancel-modal', 'btn_cancel'); s('btn-create-ticket', 'btn_create');
+  s('pdf-loading-text', 'pdf_loading');
+  // detail action buttons re-rendered dynamically — handled in renderDetailActions()
+}
+
+function renderDetailActions() {
+  const el = document.getElementById('detailActions');
+  if (!el) return;
+  el.innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="copyTicketLink()">${t('btn_copy_link')}</button>
+    <button class="btn btn-sm btn-orange" onclick="exportPDF()">${t('btn_export_pdf')}</button>
+    <button class="btn btn-sm btn-primary" onclick="emailSummary()">${t('btn_email_summary')}</button>
+    <button class="btn btn-sm btn-danger" onclick="closeTicket()">${t('btn_close_clean')}</button>`;
+}
+
+// ── VIEW ROUTING ──
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const labels = {
-    viewEntry: 'ENTRY',
-    viewCoordLogin: 'COORDINATOR',
-    viewContractorLookup: 'CONTRACTOR',
-    viewCoordDash: 'COORDINATOR',
-    viewCoordDetail: 'COORDINATOR',
-    viewContractor: 'CONTRACTOR'
-  };
-  document.getElementById('modeBadge').textContent = labels[id] || '';
+  const labels = { viewEntry:'entry_badge', viewCoordLogin:'coord_badge', viewContractorLookup:'contractor_badge', viewCoordDash:'coord_badge', viewCoordDetail:'coord_badge', viewContractor:'contractor_badge' };
+  document.getElementById('modeBadge').textContent = t(labels[id] || 'entry_badge');
 }
 
-// ═══════════════════════════════════════════════
-//  COORDINATOR AUTH
-// ═══════════════════════════════════════════════
+// ── AUTH ──
 function showCoordLogin() { showView('viewCoordLogin'); }
 function showContractorLookup() { showView('viewContractorLookup'); }
-
 function coordLogin() {
   const pin = document.getElementById('coordPinInput').value;
   if (pin === COORD_PIN) {
-    document.getElementById('topbarUser').textContent = 'Coordinator';
+    document.getElementById('topbarUser').textContent = t('topbar_user');
     showCoordDash();
-  } else {
-    toast('Incorrect PIN', 'error');
-  }
+  } else { toast(t('toast_bad_pin'), 'error'); }
 }
 function coordLogout() {
   document.getElementById('topbarUser').textContent = '';
   showView('viewEntry');
 }
 
-// ═══════════════════════════════════════════════
-//  COORDINATOR DASHBOARD
-// ═══════════════════════════════════════════════
+// ── DASHBOARD ──
 let currentTicketId = null;
-
-function showCoordDash() {
-  showView('viewCoordDash');
-  renderDash();
-}
+function showCoordDash() { showView('viewCoordDash'); renderDash(); }
 
 async function renderDash() {
   const tickets = await loadTickets();
-  // stats
   const total = tickets.length;
   const active = tickets.filter(t => t.status === 'active').length;
   const complete = tickets.filter(t => t.status === 'complete').length;
   const pending = tickets.filter(t => t.status === 'pending').length;
-
   document.getElementById('statsRow').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total Tickets</div></div>
-    <div class="stat-card orange"><div class="stat-num">${active}</div><div class="stat-label">In Progress</div></div>
-    <div class="stat-card"><div class="stat-num">${complete}</div><div class="stat-label">Completed</div></div>
-    <div class="stat-card gray"><div class="stat-num">${pending}</div><div class="stat-label">Not Started</div></div>
-  `;
-
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">${t('stat_total')}</div></div>
+    <div class="stat-card orange"><div class="stat-num">${active}</div><div class="stat-label">${t('stat_active')}</div></div>
+    <div class="stat-card"><div class="stat-num">${complete}</div><div class="stat-label">${t('stat_complete')}</div></div>
+    <div class="stat-card gray"><div class="stat-num">${pending}</div><div class="stat-label">${t('stat_pending')}</div></div>`;
   const list = document.getElementById('ticketList');
-  list.innerHTML = '<div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div><p>Loading tickets…</p></div>';
-  if (!tickets.length) {
-    list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No tickets yet. Create the first one.</p></div>`;
-    return;
-  }
-
-  list.innerHTML = tickets.map(t => {
-    const done = t.steps.filter(s => s.status === 'done' || s.status === 'approved').length;
-    const pct = t.steps.length ? Math.round(done / t.steps.length * 100) : 0;
-    const statusClass = { active: 'chip-active', complete: 'chip-complete', pending: 'chip-pending' }[t.status] || 'chip-pending';
-    const rowClass = { active: 'status-active', complete: 'status-complete', pending: 'status-pending' }[t.status] || 'status-pending';
-    return `
-      <div class="ticket-row ${rowClass}" onclick="openTicketDetail('${t.id}')">
-        <div class="ticket-id">${t.id}</div>
-        <div class="ticket-info">
-          <div class="ticket-name">${t.contractor}</div>
-          <div class="ticket-sub">${t.address} · ${t.type}</div>
-        </div>
-        <div class="ticket-progress-wrap">
-          <div class="progress-bar"><div class="progress-fill ${pct < 100 ? 'orange' : ''}" style="width:${pct}%"></div></div>
-          <div class="progress-pct">${pct}%</div>
-        </div>
-        <span class="status-chip ${statusClass}">${t.status}</span>
-      </div>`;
+  list.innerHTML = `<div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div><p>${t('loading_tickets')}</p></div>`;
+  if (!tickets.length) { list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>${t('no_tickets')}</p></div>`; return; }
+  list.innerHTML = tickets.map(tk => {
+    const done = tk.steps.filter(s => s.status === 'done' || s.status === 'approved').length;
+    const pct = tk.steps.length ? Math.round(done / tk.steps.length * 100) : 0;
+    const sc = { active:'chip-active', complete:'chip-complete', pending:'chip-pending' }[tk.status] || 'chip-pending';
+    const rc = { active:'status-active', complete:'status-complete', pending:'status-pending' }[tk.status] || 'status-pending';
+    const statusLabel = { active: t('stat_active'), complete: t('stat_complete'), pending: t('stat_pending') }[tk.status] || tk.status;
+    return `<div class="ticket-row ${rc}" onclick="openTicketDetail('${tk.id}')">
+      <div class="ticket-id">${tk.id}</div>
+      <div class="ticket-info"><div class="ticket-name">${tk.contractor}</div><div class="ticket-sub">${tk.address} · ${tk.type}</div></div>
+      <div class="ticket-progress-wrap"><div class="progress-bar"><div class="progress-fill ${pct<100?'orange':''}" style="width:${pct}%"></div></div><div class="progress-pct">${pct}%</div></div>
+      <span class="status-chip ${sc}">${statusLabel}</span>
+    </div>`;
   }).join('');
 }
 
 async function openTicketDetail(id) {
   currentTicketId = id;
-  const t = await getTicket(id);
-  if (!t) return;
-  document.getElementById('detailTitle').textContent = `${t.id} — ${t.contractor}`;
-  document.getElementById('detailMeta').textContent = `${t.address} · ${t.type} · ${t.email}`;
-  renderDetailSteps(t);
+  const tk = await getTicket(id);
+  if (!tk) return;
+  document.getElementById('detailTitle').textContent = `${tk.id} — ${tk.contractor}`;
+  document.getElementById('detailMeta').textContent = `${tk.address} · ${tk.type} · ${tk.email}`;
+  renderDetailActions();
+  renderDetailSteps(tk);
   showView('viewCoordDetail');
 }
 
-function renderDetailSteps(t) {
+function renderDetailSteps(tk) {
   const container = document.getElementById('detailSteps');
-  container.innerHTML = t.steps.map((step, i) => {
-    const statusClass = { done: 'done', approved: 'approved', rejected: 'rejected' }[step.status] || '';
-    const chipHtml = step.status === 'approved' ? '<span class="status-chip chip-approved">Approved</span>' :
-                     step.status === 'rejected' ? '<span class="status-chip chip-rejected">Rejected</span>' :
-                     step.status === 'done' ? '<span class="status-chip chip-active">Submitted</span>' : '';
-    const submissionHtml = (step.submissions || []).map(s => `
+  container.innerHTML = tk.steps.map((step, i) => {
+    const sc = { done:'done', approved:'approved', rejected:'rejected' }[step.status] || '';
+    const chipHtml = step.status === 'approved' ? `<span class="status-chip chip-approved">${t('chip_approved')}</span>` :
+                     step.status === 'rejected' ? `<span class="status-chip chip-rejected">${t('status_rejected')}</span>` :
+                     step.status === 'done' ? `<span class="status-chip chip-active">${t('chip_submitted')}</span>` : '';
+    const submissionHtml = (step.submissions||[]).map(s => `
       <div class="submission-item" style="flex-wrap:wrap;gap:6px">
         <span class="submission-icon">${fileIcon(s.type)}</span>
-        <span class="submission-name" style="flex:1;min-width:120px">${s.name}${s.archived ? ' <em style="color:var(--text3);font-size:11px">(archived)</em>' : ''}</span>
+        <span class="submission-name" style="flex:1;min-width:120px">${s.name}${s.archived?` <em style="color:var(--text3);font-size:11px">(archived)</em>`:''}</span>
         <span class="submission-meta">${s.date}</span>
-        ${s.url ? `<a href="${s.url}" target="_blank" class="submission-view" style="background:var(--accent);color:white;padding:3px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">⬇ Open</a>` : ''}
-        ${s.url && s.type && s.type.startsWith('image/') ? `<div style="width:100%;margin-top:6px"><img src="${s.url}" style="max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);object-fit:contain"></div>` : ''}
+        ${s.url?`<a href="${s.url}" target="_blank" class="submission-view" style="background:var(--accent);color:white;padding:3px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">⬇ Open</a>`:''}
+        ${s.url&&s.type&&s.type.startsWith('image/')?`<div style="width:100%;margin-top:6px"><img src="${s.url}" style="max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);object-fit:contain"></div>`:''}
       </div>`).join('');
-
-    const fieldHtml = (step.fields || []).map(f => `
-      <div class="submission-item">
-        <span class="submission-icon">📝</span>
-        <span class="submission-name">${f.label}: <strong>${f.value || '—'}</strong></span>
-      </div>`).join('');
-
+    const fieldHtml = (step.fields||[]).map(f => `
+      <div class="submission-item"><span class="submission-icon">📝</span><span class="submission-name">${f.label}: <strong>${f.value||'—'}</strong></span></div>`).join('');
     const sigHtml = step.signature ? `
-      <div class="submission-item">
-        <span class="submission-icon">✍️</span>
-        <span class="submission-name">Signature captured</span>
-        <span class="submission-meta">${step.signatureDate || ''}</span>
-      </div>` : '';
-
-    const commentsHtml = (step.comments || []).map(c => `
+      <div class="submission-item"><span class="submission-icon">✍️</span><span class="submission-name">${t('sig_on_file')}</span><span class="submission-meta">${step.signatureDate||''}</span></div>` : '';
+    const commentsHtml = (step.comments||[]).map(c => `
       <div class="comment-bubble ${c.from}">
-        <div class="comment-author">${c.from === 'coord' ? 'Coordinator' : 'Contractor'} · ${c.date}</div>
-        ${c.text}
+        <div class="comment-author">${c.from==='coord'?t('coord_label'):t('contractor_label')} · ${c.date}</div>${c.text}
       </div>`).join('');
-
-    return `
-      <div class="step-card ${statusClass}" id="stepCard_${i}">
-        <div class="step-card-header" onclick="toggleStepCard(${i})">
-          <div class="step-circle ${statusClass}">${statusClass === 'approved' ? '✓' : statusClass === 'rejected' ? '✕' : statusClass === 'done' ? '●' : i+1}</div>
-          <div class="step-card-title">${step.name}</div>
-          <div class="step-card-chips">${chipHtml}</div>
-          <span class="step-chevron">▾</span>
+    return `<div class="step-card ${sc}" id="stepCard_${i}">
+      <div class="step-card-header" onclick="toggleStepCard(${i})">
+        <div class="step-circle ${sc}">${sc==='approved'?'✓':sc==='rejected'?'✕':sc==='done'?'●':i+1}</div>
+        <div class="step-card-title">${step.name}</div>
+        <div class="step-card-chips">${chipHtml}</div>
+        <span class="step-chevron">▾</span>
+      </div>
+      <div class="step-card-body">
+        <div class="submission-list">${submissionHtml}${fieldHtml}${sigHtml}</div>
+        ${commentsHtml?`<div class="comment-thread">${commentsHtml}</div>`:''}
+        <textarea class="comment-box" id="coordComment_${i}" placeholder="${t('coord_comment_placeholder')}"></textarea>
+        <div class="coord-actions">
+          <button class="btn btn-sm" style="background:var(--green);color:white" onclick="approveStep(${i})">${t('btn_approve')}</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectStep(${i})">${t('btn_reject')}</button>
+          <button class="btn btn-ghost btn-sm" onclick="postCoordComment(${i})">${t('btn_comment')}</button>
         </div>
-        <div class="step-card-body">
-          <div class="submission-list">${submissionHtml}${fieldHtml}${sigHtml}</div>
-          ${commentsHtml ? `<div class="comment-thread">${commentsHtml}</div>` : ''}
-          <textarea class="comment-box" id="coordComment_${i}" placeholder="Leave a comment for contractor…"></textarea>
-          <div class="coord-actions">
-            <button class="btn btn-sm" style="background:var(--green);color:white" onclick="approveStep(${i})">✓ Approve</button>
-            <button class="btn btn-sm btn-danger" onclick="rejectStep(${i})">✕ Reject</button>
-            <button class="btn btn-ghost btn-sm" onclick="postCoordComment(${i})">💬 Comment</button>
-          </div>
-        </div>
-      </div>`;
+      </div>
+    </div>`;
   }).join('');
 }
 
-function toggleStepCard(i) {
-  const card = document.getElementById(`stepCard_${i}`);
-  card.classList.toggle('open');
-}
+function toggleStepCard(i) { document.getElementById(`stepCard_${i}`).classList.toggle('open'); }
 
 async function approveStep(i) {
-  const t = await getTicket(currentTicketId);
-  t.steps[i].status = 'approved';
-  checkComplete(t);
-  await updateTicket(t);
-  await openTicketDetail(currentTicketId);
-  toast('Step approved');
+  const tk = await getTicket(currentTicketId); tk.steps[i].status = 'approved'; checkComplete(tk);
+  await updateTicket(tk); await openTicketDetail(currentTicketId); toast(t('toast_approved'));
 }
 async function rejectStep(i) {
-  const t = await getTicket(currentTicketId);
-  t.steps[i].status = 'rejected';
-  t.status = 'active';
-  await updateTicket(t);
-  await openTicketDetail(currentTicketId);
-  toast('Step returned to contractor', 'warn');
+  const tk = await getTicket(currentTicketId); tk.steps[i].status = 'rejected'; tk.status = 'active';
+  await updateTicket(tk); await openTicketDetail(currentTicketId); toast(t('toast_rejected'), 'warn');
 }
 async function postCoordComment(i) {
-  const txt = document.getElementById(`coordComment_${i}`).value.trim();
-  if (!txt) return;
-  const t = await getTicket(currentTicketId);
-  if (!t.steps[i].comments) t.steps[i].comments = [];
-  t.steps[i].comments.push({ from: 'coord', text: txt, date: now() });
-  await updateTicket(t);
-  await openTicketDetail(currentTicketId);
-  toast('Comment added');
+  const txt = document.getElementById(`coordComment_${i}`).value.trim(); if (!txt) return;
+  const tk = await getTicket(currentTicketId);
+  if (!tk.steps[i].comments) tk.steps[i].comments = [];
+  tk.steps[i].comments.push({ from:'coord', text:txt, date:now() });
+  await updateTicket(tk); await openTicketDetail(currentTicketId); toast(t('toast_comment_added'));
+}
+function checkComplete(tk) {
+  tk.status = tk.steps.every(s => s.status === 'approved') ? 'complete' : 'active';
 }
 
-function checkComplete(t) {
-  const allApproved = t.steps.every(s => s.status === 'approved');
-  if (allApproved) t.status = 'complete';
-  else t.status = 'active';
-}
-
-// ═══════════════════════════════════════════════
-//  NEW TICKET MODAL
-// ═══════════════════════════════════════════════
+// ── NEW TICKET MODAL ──
 let modalSteps = [];
-
-// Default step templates
-const DEFAULT_STEPS = [
-  'Pre-install site inspection',
-  'Permits pulled',
-  'Equipment received',
-  'Installation complete',
-  'Photos of completed work',
-  'Customer signature',
-  'Final inspection passed',
-  'Rebate application submitted',
-  'Utility verification',
-  'Final documentation packet'
-];
+const DEFAULT_STEPS = ['Pre-install site inspection','Permits pulled','Equipment received','Installation complete','Photos of completed work','Customer signature','Final inspection passed','Rebate application submitted','Utility verification','Final documentation packet'];
 
 async function openNewTicketModal() {
-  await loadTickets(); // populate cache
+  await loadTickets();
   modalSteps = [...DEFAULT_STEPS];
   renderModalSteps();
   document.getElementById('ntId').value = generateId();
   document.getElementById('newTicketModal').classList.add('open');
 }
-function closeNewTicketModal() {
-  document.getElementById('newTicketModal').classList.remove('open');
-}
-function generateId() {
-  const n = Object.keys(_cache).length + 1;
-  return `ET-${new Date().getFullYear()}-${String(n).padStart(3,'0')}`;
-}
+function closeNewTicketModal() { document.getElementById('newTicketModal').classList.remove('open'); }
+function generateId() { const n = Object.keys(_cache).length + 1; return `ET-${new Date().getFullYear()}-${String(n).padStart(3,'0')}`; }
 function renderModalSteps() {
   document.getElementById('stepsList').innerHTML = modalSteps.map((s, i) => `
-    <div class="step-item">
-      <div class="step-num">${i+1}</div>
-      <div class="step-name">${s}</div>
-      <button class="step-remove" onclick="removeStep(${i})">×</button>
-    </div>`).join('');
+    <div class="step-item"><div class="step-num">${i+1}</div><div class="step-name">${s}</div><button class="step-remove" onclick="removeStep(${i})">×</button></div>`).join('');
 }
 function addStep() {
-  const val = document.getElementById('newStepInput').value.trim();
-  if (!val) return;
-  modalSteps.push(val);
-  document.getElementById('newStepInput').value = '';
-  renderModalSteps();
+  const val = document.getElementById('newStepInput').value.trim(); if (!val) return;
+  modalSteps.push(val); document.getElementById('newStepInput').value = ''; renderModalSteps();
 }
-function removeStep(i) {
-  modalSteps.splice(i, 1);
-  renderModalSteps();
-}
+function removeStep(i) { modalSteps.splice(i,1); renderModalSteps(); }
 async function createTicket() {
   const id = document.getElementById('ntId').value.trim().toUpperCase();
   const contractor = document.getElementById('ntContractor').value.trim();
   const email = document.getElementById('ntEmail').value.trim();
   const address = document.getElementById('ntAddress').value.trim();
   const type = document.getElementById('ntType').value;
-  if (!id || !contractor || !address) { toast('Fill in all required fields', 'error'); return; }
-  if (_cache[id]) { toast('Ticket ID already exists', 'error'); return; }
-  const ticket = {
-    id,
-    contractor,
-    email,
-    address,
-    type,
-    status: 'pending',
-    created: now(),
-    steps: modalSteps.map(name => ({
-      name,
-      status: 'pending',
-      submissions: [],
-      fields: [],
-      signature: null,
-      comments: []
-    }))
-  };
-  await saveTicket(ticket);
-  closeNewTicketModal();
-  showCoordDash();
-  toast(`Ticket ${id} created`);
+  if (!id||!contractor||!address) { toast(t('toast_fill_fields'),'error'); return; }
+  if (_cache[id]) { toast(t('toast_id_exists'),'error'); return; }
+  const ticket = { id, contractor, email, address, type, status:'pending', created:now(),
+    steps: modalSteps.map(name => ({ name, status:'pending', submissions:[], fields:[], signature:null, comments:[] })) };
+  await saveTicket(ticket); closeNewTicketModal(); showCoordDash(); toast(`${t('btn_new_ticket').replace('+ ','').replace('Nuevo ','')} ${id}`);
 }
 
-// ═══════════════════════════════════════════════
-//  CONTRACTOR TICKET VIEW
-// ═══════════════════════════════════════════════
+// ── CONTRACTOR VIEW ──
 let contractorTicketId = null;
-
 async function openContractorTicket() {
   const code = document.getElementById('ticketCodeInput').value.trim().toUpperCase();
-  toast('Looking up ticket…');
-  const t = await getTicket(code);
-  if (!t) { toast('Ticket not found. Check the code and try again.', 'error'); return; }
-  contractorTicketId = code;
-  renderContractorView(t);
-  showView('viewContractor');
+  toast(t('toast_looking_up'));
+  const tk = await getTicket(code);
+  if (!tk) { toast(t('toast_not_found'),'error'); return; }
+  contractorTicketId = code; renderContractorView(tk); showView('viewContractor');
 }
-
-// also allow URL param ?ticket=ET-2024-001
 (async function checkUrlParam() {
   const p = new URLSearchParams(location.search).get('ticket');
-  if (p) {
-    const t = await getTicket(p.toUpperCase());
-    if (t) {
-      contractorTicketId = p.toUpperCase();
-      renderContractorView(t);
-      setTimeout(() => showView('viewContractor'), 50);
-    }
-  }
+  if (p) { const tk = await getTicket(p.toUpperCase()); if (tk) { contractorTicketId = p.toUpperCase(); renderContractorView(tk); setTimeout(()=>showView('viewContractor'),50); } }
 })();
 
-function renderContractorView(t) {
-  document.getElementById('cTicketTitle').textContent = `${t.id} — ${t.type}`;
-  document.getElementById('cTicketMeta').textContent = `${t.address} · Assigned to: ${t.contractor}`;
-  const done = t.steps.filter(s => s.status === 'done' || s.status === 'approved').length;
-  const pct = t.steps.length ? Math.round(done / t.steps.length * 100) : 0;
-  document.getElementById('cProgressFill').style.width = pct + '%';
-  document.getElementById('cProgressText').textContent = `${done} / ${t.steps.length} complete`;
-
+function renderContractorView(tk) {
+  document.getElementById('cTicketTitle').textContent = `${tk.id} — ${tk.type}`;
+  document.getElementById('cTicketMeta').textContent = `${tk.address} · ${t('assigned_to')}: ${tk.contractor}`;
+  const done = tk.steps.filter(s => s.status==='done'||s.status==='approved').length;
+  const pct = tk.steps.length ? Math.round(done/tk.steps.length*100) : 0;
+  document.getElementById('cProgressFill').style.width = pct+'%';
+  document.getElementById('cProgressText').textContent = `${done} / ${tk.steps.length} ${t('progress_complete')}`;
+  document.getElementById('checklist-section-title').textContent = t('checklist_section');
   const container = document.getElementById('contractorSteps');
-  container.innerHTML = t.steps.map((step, i) => {
-    const statusClass = step.status === 'approved' ? 'done' : step.status === 'done' ? 'done' : step.status === 'rejected' ? 'rejected' : '';
-    const chipHtml = step.status === 'approved' ? '<span class="status-chip chip-approved">Approved ✓</span>' :
-                     step.status === 'rejected' ? '<span class="status-chip chip-rejected">Needs revision</span>' :
-                     step.status === 'done' ? '<span class="status-chip chip-active">Submitted</span>' : '';
-
-    const commentsFromCoord = (step.comments || []).filter(c => c.from === 'coord');
-    const coordCommentsHtml = commentsFromCoord.map(c => `
-      <div class="comment-bubble coord">
-        <div class="comment-author">Coordinator · ${c.date}</div>
-        ${c.text}
-      </div>`).join('');
-
-    const uploadedFilesHtml = (step.submissions || []).map((s, fi) => `
+  container.innerHTML = tk.steps.map((step, i) => {
+    const sc = step.status==='approved'?'done':step.status==='done'?'done':step.status==='rejected'?'rejected':'';
+    const chipHtml = step.status==='approved'?`<span class="status-chip chip-approved">${t('chip_approved')}</span>`:
+                     step.status==='rejected'?`<span class="status-chip chip-rejected">${t('chip_revision')}</span>`:
+                     step.status==='done'?`<span class="status-chip chip-active">${t('chip_submitted')}</span>`:'';
+    const coordComments = (step.comments||[]).filter(c=>c.from==='coord');
+    const coordCommentsHtml = coordComments.map(c=>`
+      <div class="comment-bubble coord"><div class="comment-author">${t('coord_label')} · ${c.date}</div>${c.text}</div>`).join('');
+    const uploadedFilesHtml = (step.submissions||[]).map((s,fi)=>`
       <div class="uploaded-file" style="flex-wrap:wrap">
         <span class="icon">${fileIcon(s.type)}</span>
-        <span class="name" style="flex:1;min-width:100px">${s.archived ? s.name + ' (archived)' : s.name}</span>
-        ${s.url ? `<a href="${s.url}" target="_blank" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;background:var(--yellow-bg);padding:2px 8px;border-radius:5px">⬇ Open</a>` : ''}
+        <span class="name" style="flex:1;min-width:100px">${s.archived?s.name+' (archived)':s.name}</span>
+        ${s.url?`<a href="${s.url}" target="_blank" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;background:var(--yellow-bg);padding:2px 8px;border-radius:5px">⬇ Open</a>`:''}
         <span class="size">${s.date}</span>
-        ${!s.archived ? `<button class="remove" onclick="removeSubmission(${i}, ${fi})">×</button>` : ''}
-        ${s.url && s.type && s.type.startsWith('image/') ? `<div style="width:100%;margin-top:6px"><img src="${s.url}" style="max-width:100%;max-height:180px;border-radius:6px;object-fit:contain;border:1px solid var(--border)"></div>` : ''}
+        ${!s.archived?`<button class="remove" onclick="removeSubmission(${i},${fi})">×</button>`:''}
+        ${s.url&&s.type&&s.type.startsWith('image/')?`<div style="width:100%;margin-top:6px"><img src="${s.url}" style="max-width:100%;max-height:180px;border-radius:6px;object-fit:contain;border:1px solid var(--border)"></div>`:''}
       </div>`).join('');
-
-    const fieldsHtml = (step.fields || []).map((f, fi) => `
-      <div class="field-group">
-        <label>${f.label}</label>
-        <input class="input" value="${f.value || ''}" oninput="updateField(${i}, ${fi}, this.value)" placeholder="Enter value…">
-      </div>`).join('');
-
+    const fieldsHtml = (step.fields||[]).map((f,fi)=>`
+      <div class="field-group"><label>${f.label}</label><input class="input" value="${f.value||''}" oninput="updateField(${i},${fi},this.value)" placeholder="${t('enter_field')}"></div>`).join('');
     const sigHtml = step.signature
-      ? `<div class="uploaded-file"><span class="icon">✍️</span><span class="name">Signature on file</span><span class="size">${step.signatureDate}</span><button class="remove" onclick="clearSignature(${i})">×</button></div>`
+      ? `<div class="uploaded-file"><span class="icon">✍️</span><span class="name">${t('sig_on_file')}</span><span class="size">${step.signatureDate}</span><button class="remove" onclick="clearSignature(${i})">×</button></div>`
       : `<div class="signature-pad-wrap">
            <canvas id="sigCanvas_${i}" width="500" height="120" style="max-width:100%"></canvas>
            <div class="sig-toolbar">
-             <span style="font-size:12px;color:var(--gray-600);flex:1">Sign above</span>
-             <button class="btn btn-ghost btn-sm" style="padding:4px 10px" onclick="clearCanvas(${i})">Clear</button>
-             <button class="btn btn-primary btn-sm" style="padding:4px 10px" onclick="saveSignature(${i})">Save</button>
+             <span style="font-size:12px;color:var(--gray-600);flex:1">${t('sign_above')}</span>
+             <button class="btn btn-ghost btn-sm" style="padding:4px 10px" onclick="clearCanvas(${i})">${t('btn_clear_sig')}</button>
+             <button class="btn btn-primary btn-sm" style="padding:4px 10px" onclick="saveSignature(${i})">${t('btn_save_sig')}</button>
            </div>
          </div>`;
-
-    const isComplete = step.status === 'done' || step.status === 'approved';
-    const btnLabel = isComplete ? '✓ Submitted' : 'Mark as Complete';
+    const isComplete = step.status==='done'||step.status==='approved';
+    const btnLabel = isComplete ? t('btn_submitted') : t('btn_mark_complete');
     const btnStyle = isComplete ? 'background:var(--green-accent);color:white;opacity:0.7;cursor:default' : 'background:var(--green);color:white';
-
-    return `
-      <div class="cstep-card ${statusClass}" id="cstep_${i}">
-        <div class="cstep-header" onclick="toggleCStep(${i})">
-          <div class="step-circle ${statusClass}">${statusClass === 'done' ? '✓' : statusClass === 'rejected' ? '!' : i+1}</div>
-          <div class="cstep-title">${step.name}</div>
-          <div style="display:flex;gap:6px;align-items:center">${chipHtml}</div>
-          <span class="step-chevron">▾</span>
+    return `<div class="cstep-card ${sc}" id="cstep_${i}">
+      <div class="cstep-header" onclick="toggleCStep(${i})">
+        <div class="step-circle ${sc}">${sc==='done'?'✓':sc==='rejected'?'!':i+1}</div>
+        <div class="cstep-title">${step.name}</div>
+        <div style="display:flex;gap:6px;align-items:center">${chipHtml}</div>
+        <span class="step-chevron">▾</span>
+      </div>
+      <div class="cstep-body">
+        ${coordCommentsHtml?`<div class="comment-thread" style="margin-bottom:12px">${coordCommentsHtml}</div>`:''}
+        <div class="section-title" style="margin-top:0;margin-bottom:8px">${t('upload_section')}</div>
+        <div class="upload-zone" onclick="triggerUpload(${i})">
+          <input type="file" id="fileInput_${i}" multiple accept="image/*,.pdf" onchange="handleUpload(${i},event)" style="position:absolute;opacity:0;inset:0;cursor:pointer">
+          <div class="upload-zone-icon">📎</div>
+          <div class="upload-zone-text">${t('upload_zone_text')}</div>
+          <div class="upload-zone-hint">${t('upload_zone_hint')}</div>
         </div>
-        <div class="cstep-body">
-          ${coordCommentsHtml ? `<div class="comment-thread" style="margin-bottom:12px">${coordCommentsHtml}</div>` : ''}
-          <div class="section-title" style="margin-top:0;margin-bottom:8px">Upload files</div>
-          <div class="upload-zone" onclick="triggerUpload(${i})">
-            <input type="file" id="fileInput_${i}" multiple accept="image/*,.pdf" onchange="handleUpload(${i}, event)" style="position:absolute;opacity:0;inset:0;cursor:pointer">
-            <div class="upload-zone-icon">📎</div>
-            <div class="upload-zone-text">Click to upload photos or PDFs</div>
-            <div class="upload-zone-hint">JPG, PNG, PDF accepted</div>
-          </div>
-          <div class="uploaded-files" id="uploadedFiles_${i}">${uploadedFilesHtml}</div>
-          ${step.fields && step.fields.length ? `<div class="section-title" style="margin-bottom:8px">Form fields</div>${fieldsHtml}` : ''}
-          <div class="section-title" style="margin-bottom:8px">Signature</div>
-          <div id="sigWrap_${i}">${sigHtml}</div>
-          <button class="btn mark-complete-btn" style="${btnStyle}" ${isComplete ? 'disabled' : `onclick="markStepDone(${i})"`}>${btnLabel}</button>
-        </div>
-      </div>`;
+        <div class="uploaded-files" id="uploadedFiles_${i}">${uploadedFilesHtml}</div>
+        ${step.fields&&step.fields.length?`<div class="section-title" style="margin-bottom:8px">${t('fields_section')}</div>${fieldsHtml}`:''}
+        <div class="section-title" style="margin-bottom:8px">${t('sig_section')}</div>
+        <div id="sigWrap_${i}">${sigHtml}</div>
+        <button class="btn mark-complete-btn" style="${btnStyle}" ${isComplete?'disabled':`onclick="markStepDone(${i})"`}>${btnLabel}</button>
+      </div>
+    </div>`;
   }).join('');
-
-  // init signature pads after render
-  setTimeout(() => {
-    t.steps.forEach((step, i) => {
-      if (!step.signature) initSigPad(i);
-    });
-  }, 100);
+  setTimeout(()=>{ tk.steps.forEach((step,i)=>{ if(!step.signature) initSigPad(i); }); },100);
 }
 
 function toggleCStep(i) {
-  const card = document.getElementById(`cstep_${i}`);
-  card.classList.toggle('open');
-  const t = getTicket(contractorTicketId);
-  if (card.classList.contains('open') && !t.steps[i].signature) {
-    setTimeout(() => initSigPad(i), 50);
-  }
+  const card = document.getElementById(`cstep_${i}`); card.classList.toggle('open');
+  if (card.classList.contains('open')) { const tk = _cache[contractorTicketId]; if(tk&&!tk.steps[i].signature) setTimeout(()=>initSigPad(i),50); }
 }
-
-// file uploads
-function triggerUpload(i) {
-  document.getElementById(`fileInput_${i}`).click();
-}
+function triggerUpload(i) { document.getElementById(`fileInput_${i}`).click(); }
 async function handleUpload(i, event) {
-  const files = Array.from(event.target.files);
-  if (!files.length) return;
-  toast(`Uploading ${files.length} file(s)…`);
-  const t = await getTicket(contractorTicketId);
+  const files = Array.from(event.target.files); if (!files.length) return;
+  toast(`${t('toast_uploading')}`);
+  const tk = await getTicket(contractorTicketId);
   for (const file of files) {
     const result = await uploadFileToStorage(contractorTicketId, i, file);
-    if (result) {
-      t.steps[i].submissions.push({ name: result.name, type: result.type, date: now(), size: file.size, url: result.url, path: result.path });
-    } else {
-      // fallback to base64 if storage fails
-      const data = await new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
-      t.steps[i].submissions.push({ name: file.name, type: file.type, date: now(), size: file.size, data });
+    if (result) { tk.steps[i].submissions.push({ name:result.name, type:result.type, date:now(), size:file.size, url:result.url, path:result.path }); }
+    else {
+      const data = await new Promise(res=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(file); });
+      tk.steps[i].submissions.push({ name:file.name, type:file.type, date:now(), size:file.size, data });
     }
   }
-  if (t.status === 'pending') t.status = 'active';
-  await updateTicket(t);
-  renderContractorView(t);
-  setTimeout(() => {
-    document.getElementById(`cstep_${i}`).classList.add('open');
-    const t2 = _cache[contractorTicketId];
-    if (t2 && !t2.steps[i].signature) initSigPad(i);
-  }, 50);
-  toast(`${files.length} file(s) uploaded ✓`);
+  if (tk.status==='pending') tk.status='active';
+  await updateTicket(tk); renderContractorView(tk);
+  setTimeout(()=>{ document.getElementById(`cstep_${i}`).classList.add('open'); const t2=_cache[contractorTicketId]; if(t2&&!t2.steps[i].signature) initSigPad(i); },50);
+  toast(`${files.length} ${t('toast_uploaded')}`);
 }
 async function removeSubmission(stepIdx, fileIdx) {
-  const t = await getTicket(contractorTicketId);
-  const sub = t.steps[stepIdx].submissions[fileIdx];
-  if (sub && sub.path) {
-    await sb.storage.from('ticket-files').remove([sub.path]);
-  }
-  t.steps[stepIdx].submissions.splice(fileIdx, 1);
-  await updateTicket(t);
-  renderContractorView(t);
-  setTimeout(() => {
-    document.getElementById(`cstep_${stepIdx}`).classList.add('open');
-  }, 50);
+  const tk = await getTicket(contractorTicketId);
+  const sub = tk.steps[stepIdx].submissions[fileIdx];
+  if (sub&&sub.path) await sb.storage.from('ticket-files').remove([sub.path]);
+  tk.steps[stepIdx].submissions.splice(fileIdx,1);
+  await updateTicket(tk); renderContractorView(tk);
+  setTimeout(()=>{ document.getElementById(`cstep_${stepIdx}`).classList.add('open'); },50);
 }
-
-// form fields
 async function updateField(stepIdx, fieldIdx, val) {
-  const t = await getTicket(contractorTicketId);
-  t.steps[stepIdx].fields[fieldIdx].value = val;
-  await updateTicket(t);
+  const tk = await getTicket(contractorTicketId); tk.steps[stepIdx].fields[fieldIdx].value = val; await updateTicket(tk);
 }
 
-// signature
+// ── SIGNATURES ──
 const sigPads = {};
 function initSigPad(i) {
-  const canvas = document.getElementById(`sigCanvas_${i}`);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = '#1a5c3a';
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  let drawing = false, lx, ly;
-  function getPos(e) {
-    const r = canvas.getBoundingClientRect();
-    const src = e.touches ? e.touches[0] : e;
-    return { x: (src.clientX - r.left) * (canvas.width / r.width), y: (src.clientY - r.top) * (canvas.height / r.height) };
-  }
-  canvas.onmousedown = canvas.ontouchstart = e => { e.preventDefault(); drawing = true; const p = getPos(e); lx = p.x; ly = p.y; ctx.beginPath(); ctx.moveTo(lx, ly); };
-  canvas.onmousemove = canvas.ontouchmove = e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); lx = p.x; ly = p.y; };
-  canvas.onmouseup = canvas.ontouchend = () => { drawing = false; };
-  sigPads[i] = { canvas, ctx };
+  const canvas = document.getElementById(`sigCanvas_${i}`); if (!canvas) return;
+  const ctx = canvas.getContext('2d'); ctx.strokeStyle='#1a5c3a'; ctx.lineWidth=2; ctx.lineCap='round';
+  let drawing=false, lx, ly;
+  function getPos(e) { const r=canvas.getBoundingClientRect(); const src=e.touches?e.touches[0]:e; return { x:(src.clientX-r.left)*(canvas.width/r.width), y:(src.clientY-r.top)*(canvas.height/r.height) }; }
+  canvas.onmousedown=canvas.ontouchstart=e=>{ e.preventDefault(); drawing=true; const p=getPos(e); lx=p.x; ly=p.y; ctx.beginPath(); ctx.moveTo(lx,ly); };
+  canvas.onmousemove=canvas.ontouchmove=e=>{ e.preventDefault(); if(!drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); lx=p.x; ly=p.y; };
+  canvas.onmouseup=canvas.ontouchend=()=>{ drawing=false; };
+  sigPads[i]={ canvas, ctx };
 }
-function clearCanvas(i) {
-  const pad = sigPads[i];
-  if (!pad) return;
-  pad.ctx.clearRect(0, 0, pad.canvas.width, pad.canvas.height);
-}
+function clearCanvas(i) { const pad=sigPads[i]; if(!pad) return; pad.ctx.clearRect(0,0,pad.canvas.width,pad.canvas.height); }
 async function saveSignature(i) {
-  const pad = sigPads[i];
-  if (!pad) return;
-  const dataUrl = pad.canvas.toDataURL();
-  const t = await getTicket(contractorTicketId);
-  t.steps[i].signature = dataUrl;
-  t.steps[i].signatureDate = now();
-  await updateTicket(t);
-  renderContractorView(t);
-  setTimeout(() => {
-    document.getElementById(`cstep_${i}`).classList.add('open');
-  }, 50);
-  toast('Signature saved');
+  const pad=sigPads[i]; if(!pad) return;
+  const dataUrl=pad.canvas.toDataURL();
+  const tk=await getTicket(contractorTicketId); tk.steps[i].signature=dataUrl; tk.steps[i].signatureDate=now();
+  await updateTicket(tk); renderContractorView(tk);
+  setTimeout(()=>{ document.getElementById(`cstep_${i}`).classList.add('open'); },50);
+  toast(t('toast_sig_saved'));
 }
 async function clearSignature(i) {
-  const t = await getTicket(contractorTicketId);
-  t.steps[i].signature = null;
-  t.steps[i].signatureDate = null;
-  await updateTicket(t);
-  renderContractorView(t);
-  setTimeout(() => {
-    document.getElementById(`cstep_${i}`).classList.add('open');
-    initSigPad(i);
-  }, 80);
+  const tk=await getTicket(contractorTicketId); tk.steps[i].signature=null; tk.steps[i].signatureDate=null;
+  await updateTicket(tk); renderContractorView(tk);
+  setTimeout(()=>{ document.getElementById(`cstep_${i}`).classList.add('open'); initSigPad(i); },80);
 }
-
 async function markStepDone(i) {
-  const t = await getTicket(contractorTicketId);
-  t.steps[i].status = 'done';
-  if (t.status === 'pending') t.status = 'active';
-  await updateTicket(t);
-  renderContractorView(t);
-  toast('Step submitted to coordinator ✓');
+  const tk=await getTicket(contractorTicketId); tk.steps[i].status='done';
+  if(tk.status==='pending') tk.status='active';
+  await updateTicket(tk); renderContractorView(tk); toast(t('toast_step_submitted'));
 }
 
-// ═══════════════════════════════════════════════
-//  EXPORT / EMAIL
-// ═══════════════════════════════════════════════
+// ── EXPORT / EMAIL ──
 function copyTicketLink() {
-  const url = `${location.origin}${location.pathname}?ticket=${currentTicketId}`;
-  navigator.clipboard.writeText(url).then(() => toast('Link copied to clipboard'));
+  const url=`${location.origin}${location.pathname}?ticket=${currentTicketId}`;
+  navigator.clipboard.writeText(url).then(()=>toast(t('toast_link_copied')));
 }
-
 async function exportPDF() {
-  const t = await getTicket(currentTicketId);
-  if (!t) return;
+  const tk=await getTicket(currentTicketId); if(!tk) return;
   document.getElementById('pdfLoading').classList.add('show');
-  setTimeout(() => {
+  setTimeout(()=>{
     try {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-      const green = [107, 45, 15];
-      const gray = [108, 117, 125];
-      let y = 50;
-      const W = 612;
-
-      // Header
-      doc.setFillColor(...green);
-      doc.rect(0, 0, W, 44, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('ENERGY TRUST OF OREGON — CONTRACTOR PACKET', 40, 28);
-
-      y = 70;
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${t.id} — ${t.contractor}`, 40, y);
-      y += 22;
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...gray);
-      doc.text(`${t.address} · ${t.type} · ${t.email}`, 40, y);
-      y += 10;
-      doc.text(`Generated: ${now()}`, 40, y);
-      y += 20;
-
-      // Divider
-      doc.setDrawColor(...green);
-      doc.setLineWidth(1.5);
-      doc.line(40, y, W - 40, y);
-      y += 20;
-
-      t.steps.forEach((step, i) => {
-        if (y > 700) { doc.addPage(); y = 50; }
-        const statusLabel = { approved: 'APPROVED', done: 'SUBMITTED', rejected: 'REJECTED', pending: 'PENDING' }[step.status] || 'PENDING';
-        const statusColor = { approved: [22, 163, 74], done: [224, 123, 42], rejected: [192, 57, 43], pending: [108, 117, 125] }[step.status];
-
-        // Step header
-        doc.setFillColor(248, 249, 250);
-        doc.rect(40, y - 12, W - 80, 22, 'F');
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(0, 0, 0);
-        doc.text(`${i + 1}. ${step.name}`, 50, y);
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...statusColor);
-        doc.text(statusLabel, W - 90, y);
-        y += 16;
-
-        // Files
-        if (step.submissions && step.submissions.length) {
-          step.submissions.forEach(s => {
-            if (y > 680) { doc.addPage(); y = 50; }
-            if (s.type && s.type.startsWith('image/') && (s.data || s.url)) {
-              try {
-                const imgSrc = s.data || s.url;
-                const imgType = s.type.includes('png') ? 'PNG' : 'JPEG';
-                doc.addImage(imgSrc, imgType, 50, y, 480, 0);
-                const props = doc.getImageProperties(imgSrc);
-                const h = (props.height / props.width) * 480;
-                y += h + 8;
-              } catch(e) {
-                doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...gray);
-                doc.text(`  [Image] ${s.name} (${s.date})`, 50, y); y += 13;
-              }
-            } else if (s.type === 'application/pdf') {
-              doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...gray);
-              doc.text(`  [PDF attached] ${s.name} (${s.date})`, 50, y); y += 13;
-            } else {
-              doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...gray);
-              doc.text(`  ${s.name} (${s.date})`, 50, y); y += 13;
-            }
+      const { jsPDF }=window.jspdf;
+      const doc=new jsPDF({ unit:'pt', format:'letter' });
+      const green=[107,45,15]; const gray=[108,117,125];
+      let y=50; const W=612;
+      doc.setFillColor(...green); doc.rect(0,0,W,44,'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+      doc.text(t('pdf_header'),40,28);
+      y=70; doc.setTextColor(0,0,0); doc.setFontSize(18); doc.setFont('helvetica','bold');
+      doc.text(`${tk.id} — ${tk.contractor}`,40,y); y+=22;
+      doc.setFontSize(11); doc.setFont('helvetica','normal'); doc.setTextColor(...gray);
+      doc.text(`${tk.address} · ${tk.type} · ${tk.email}`,40,y); y+=10;
+      doc.text(`${t('pdf_generated')}: ${now()}`,40,y); y+=20;
+      doc.setDrawColor(...green); doc.setLineWidth(1.5); doc.line(40,y,W-40,y); y+=20;
+      tk.steps.forEach((step,i)=>{
+        if(y>700){ doc.addPage(); y=50; }
+        const statusLabel={ approved:t('status_approved'), done:t('status_submitted'), rejected:t('status_rejected'), pending:t('status_pending') }[step.status]||t('status_pending');
+        const statusColor={ approved:[22,163,74], done:[224,123,42], rejected:[192,57,43], pending:[108,117,125] }[step.status];
+        doc.setFillColor(248,249,250); doc.rect(40,y-12,W-80,22,'F');
+        doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.setTextColor(0,0,0);
+        doc.text(`${i+1}. ${step.name}`,50,y);
+        doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(...statusColor);
+        doc.text(statusLabel,W-90,y); y+=16;
+        if(step.submissions&&step.submissions.length){
+          step.submissions.forEach(s=>{
+            if(y>680){ doc.addPage(); y=50; }
+            if(s.type&&s.type.startsWith('image/')&&(s.data||s.url)){
+              try{ const imgSrc=s.data||s.url; const imgType=s.type.includes('png')?'PNG':'JPEG'; doc.addImage(imgSrc,imgType,50,y,480,0); const props=doc.getImageProperties(imgSrc); const h=(props.height/props.width)*480; y+=h+8; }
+              catch(e){ doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...gray); doc.text(`  [Image] ${s.name} (${s.date})`,50,y); y+=13; }
+            } else { doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...gray); doc.text(`  ${s.name} (${s.date})`,50,y); y+=13; }
           });
         }
-        // Fields
-        if (step.fields && step.fields.length) {
-          step.fields.forEach(f => {
-            doc.text(`  ${f.label}: ${f.value || '—'}`, 50, y);
-            y += 13;
-          });
-        }
-        // Signature
-        if (step.signature) {
-          try {
-            doc.addImage(step.signature, 'PNG', 50, y, 120, 36);
-            y += 42;
-          } catch(e) {}
-        }
-        // Comments
-        const coordComments = (step.comments || []).filter(c => c.from === 'coord');
-        if (coordComments.length) {
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'italic');
-          doc.setTextColor(...gray);
-          coordComments.forEach(c => {
-            doc.text(`  💬 Coordinator: ${c.text}`, 50, y);
-            y += 13;
-          });
-        }
-        y += 10;
+        if(step.fields&&step.fields.length){ step.fields.forEach(f=>{ doc.text(`  ${f.label}: ${f.value||'—'}`,50,y); y+=13; }); }
+        if(step.signature){ try{ doc.addImage(step.signature,'PNG',50,y,120,36); y+=42; }catch(e){} }
+        const coordComments=(step.comments||[]).filter(c=>c.from==='coord');
+        if(coordComments.length){ doc.setFontSize(10); doc.setFont('helvetica','italic'); doc.setTextColor(...gray); coordComments.forEach(c=>{ doc.text(`  💬 ${t('coord_label')}: ${c.text}`,50,y); y+=13; }); }
+        y+=10;
       });
-
-      doc.save(`${t.id}_packet.pdf`);
-    } catch(e) {
-      toast('PDF generation failed', 'error');
-    }
+      doc.save(`${tk.id}_packet.pdf`);
+    } catch(e){ toast('PDF generation failed','error'); }
     document.getElementById('pdfLoading').classList.remove('show');
-  }, 300);
+  },300);
 }
-
 async function closeTicket() {
-  if (!confirm('This will export the PDF and delete all uploaded files from storage to free space. Continue?')) return;
+  if(!confirm(t('close_confirm'))) return;
   await exportPDF();
-  const t = await getTicket(currentTicketId);
-  if (!t) return;
+  const tk=await getTicket(currentTicketId); if(!tk) return;
   await deleteTicketFiles(currentTicketId);
-  // Clear submission URLs/data from ticket record, keep names for record
-  t.steps.forEach(step => {
-    step.submissions = step.submissions.map(s => ({ name: s.name, type: s.type, date: s.date, archived: true }));
-  });
-  t.status = 'complete';
-  t.closedAt = now();
-  await updateTicket(t);
-  toast('Ticket closed — files deleted, PDF saved ✓');
-  setTimeout(() => showCoordDash(), 1500);
+  tk.steps.forEach(step=>{ step.submissions=step.submissions.map(s=>({ name:s.name, type:s.type, date:s.date, archived:true })); });
+  tk.status='complete'; tk.closedAt=now(); await updateTicket(tk);
+  toast(t('toast_ticket_closed')); setTimeout(()=>showCoordDash(),1500);
 }
-
 async function emailSummary() {
-  const t = await getTicket(currentTicketId);
-  if (!t) return;
-  const done = t.steps.filter(s => s.status === 'done' || s.status === 'approved').length;
-  const pct = Math.round(done / t.steps.length * 100);
-  const stepLines = t.steps.map((s, i) => {
-    const label = { approved: '✅ Approved', done: '🟡 Submitted', rejected: '❌ Rejected', pending: '⬜ Pending' }[s.status] || '⬜ Pending';
-    return `${i + 1}. ${s.name} — ${label}`;
-  }).join('\n');
-  const body = encodeURIComponent(`Ticket: ${t.id}\nContractor: ${t.contractor}\nAddress: ${t.address}\nProgress: ${pct}% (${done}/${t.steps.length} steps)\n\n${stepLines}\n\nGenerated: ${now()}`);
-  const subject = encodeURIComponent(`Ticket Update: ${t.id} — ${t.contractor} (${pct}%)`);
-  const mailto = `mailto:${t.email || ''}?subject=${subject}&body=${body}`;
-  window.open(mailto);
+  const tk=await getTicket(currentTicketId); if(!tk) return;
+  const done=tk.steps.filter(s=>s.status==='done'||s.status==='approved').length;
+  const pct=Math.round(done/tk.steps.length*100);
+  const stepLines=tk.steps.map((s,i)=>{ const label={approved:'✅ '+t('status_approved'),done:'🟡 '+t('status_submitted'),rejected:'❌ '+t('status_rejected'),pending:'⬜ '+t('status_pending')}[s.status]||'⬜'; return `${i+1}. ${s.name} — ${label}`; }).join('\n');
+  const body=encodeURIComponent(`${tk.id}\n${tk.contractor}\n${tk.address}\n${pct}% (${done}/${tk.steps.length})\n\n${stepLines}\n\n${t('pdf_generated')}: ${now()}`);
+  const subject=encodeURIComponent(`${tk.id} — ${tk.contractor} (${pct}%)`);
+  window.open(`mailto:${tk.email||''}?subject=${subject}&body=${body}`);
 }
 
-// ═══════════════════════════════════════════════
-//  UTILITIES
-// ═══════════════════════════════════════════════
-function fileIcon(type) {
-  if (!type) return '📄';
-  if (type.startsWith('image/')) return '🖼️';
-  if (type === 'application/pdf') return '📕';
-  return '📄';
-}
-
-function now() {
-  return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
-
+// ── UTILS ──
+function fileIcon(type) { if(!type) return '📄'; if(type.startsWith('image/')) return '🖼️'; if(type==='application/pdf') return '📕'; return '📄'; }
+function now() { return new Date().toLocaleDateString('en-US',{ month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
 let toastTimer;
-function toast(msg, type = 'success') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.style.background = type === 'error' ? 'var(--red)' : type === 'warn' ? 'var(--orange)' : 'var(--green)';
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+function toast(msg, type='success') {
+  const el=document.getElementById('toast'); el.textContent=msg;
+  el.style.background=type==='error'?'var(--red)':type==='warn'?'var(--orange)':'var(--green)';
+  el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
 }
 
-// seed demo data if Supabase is empty
-(async function seedIfEmpty() {
-  // just populate the cache on load
-  await loadTickets();
-  if (false) {
-  const demo = [
-    {
-      id: 'ET-2024-001',
-      contractor: 'Pacific NW Heating',
-      email: 'ops@pacificnwheat.com',
-      address: '1847 SE Hawthorne Blvd, Portland OR',
-      type: 'Heat Pump Install',
-      status: 'active',
-      created: 'Mar 15, 2024',
-      steps: [
-        { name: 'Pre-install site inspection', status: 'approved', submissions: [{ name: 'site_photos.jpg', type: 'image/jpeg', date: 'Mar 16, 2024', size: 1200000 }], fields: [], signature: null, comments: [] },
-        { name: 'Permits pulled', status: 'approved', submissions: [{ name: 'permit_2024.pdf', type: 'application/pdf', date: 'Mar 17, 2024', size: 450000 }], fields: [], signature: null, comments: [] },
-        { name: 'Equipment received', status: 'done', submissions: [], fields: [], signature: null, comments: [{ from: 'coord', text: 'Please attach delivery receipt.', date: 'Mar 18, 2024' }] },
-        { name: 'Installation complete', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Photos of completed work', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Customer signature', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Final inspection passed', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Rebate application submitted', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Utility verification', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Final documentation packet', status: 'pending', submissions: [], fields: [], signature: null, comments: [] }
-      ]
-    },
-    {
-      id: 'ET-2024-002',
-      contractor: 'Green Home Solutions',
-      email: 'jobs@greenhomesolutions.com',
-      address: '421 NW Thurman St, Portland OR',
-      type: 'Weatherization',
-      status: 'pending',
-      created: 'Mar 20, 2024',
-      steps: [
-        { name: 'Initial assessment', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Blower door test pre-work', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Air sealing complete', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Insulation installed', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Blower door test post-work', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Photos of all work areas', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Customer walkthrough sign-off', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Rebate form submitted', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Final inspection', status: 'pending', submissions: [], fields: [], signature: null, comments: [] },
-        { name: 'Closeout documentation', status: 'pending', submissions: [], fields: [], signature: null, comments: [] }
-      ]
-    }
-  ];
-  for (const t of demo) { await saveTicket(t); }
-  }
-})();
+// ── INIT ──
+(async function init() { await loadTickets(); })();
 </script>
 </body>
 </html>
