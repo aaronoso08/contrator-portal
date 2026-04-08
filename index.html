@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contractor Portal</title>
+<title>Energy Trust – Contractor Portal</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -206,7 +206,7 @@
 <body>
 
 <div class="topbar">
-  <div class="topbar-brand">CONTRACTOR PORTAL</div>
+  <div class="topbar-brand">ENERGY TRUST — CONTRACTOR PORTAL</div>
   <div class="topbar-right">
     <div class="lang-toggle">
       <button class="lang-btn active" id="lb-en" onclick="setLang('en')">EN</button>
@@ -1025,7 +1025,7 @@ function toast(msg, type='success') {
 }
 
 // ── INIT ──
-(async function init() { await loadTickets(); })();
+(async function init() { applyTranslations(); await loadTickets(); })();
 </script>
 </body>
 </html>
